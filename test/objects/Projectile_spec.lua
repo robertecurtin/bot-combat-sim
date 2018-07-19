@@ -1,7 +1,7 @@
-local Bot = require('objects/Bot')
+local Projectile = require('objects/Projectile')
 local mach = require('mach')
 
-describe('Bot', function()
+describe('Projectile', function()
   local love = {
     physics = {
       newBody = mach.mock_function('newBody'),
@@ -20,7 +20,7 @@ describe('Bot', function()
       and_also(love.physics.newCircleShape:should_be_called_with_any_arguments()):
       and_will_return(shape):
       when(function()
-        Bot(love, world, '', 3, 4)
+        Projectile(love, world, '', 3, 4)
       end)
   end)
 
@@ -32,10 +32,10 @@ describe('Bot', function()
       }
     }
 
-    local bot = Bot(love, world, 'some name', 3, 4)
-    assert.are.same('some name', bot.data.name)
-    assert.are.same('circle', bot.data.graphicsType)
-    assert.are.are_not_equal(null, bot.restitution)
-    assert.are.are_not_equal(null, bot.mass)
+    local projectile = Projectile(love, world, 'some name', 3, 4)
+    assert.are.same('some name', projectile.data.name)
+    assert.are.same('circle', projectile.data.graphicsType)
+    assert.are.are_not_equal(null, projectile.restitution)
+    assert.are.are_not_equal(null, projectile.mass)
   end)
 end)
