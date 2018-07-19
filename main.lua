@@ -1,3 +1,6 @@
+local Bot = require 'src/objects/Bot'
+local Edge = require 'src/objects/Edge'
+
 local world
 local objects
 
@@ -6,7 +9,7 @@ local height = 800
 
 function start_contact(a, b, coll)
     x,y = coll:getNormal()
-    print("\n"..a:getUserData().." colliding with "..b:getUserData().." with a vector normal of: "..x..", "..y)
+    print("\n"..a:getUserData().name.." colliding with "..b:getUserData().name.." with a vector normal of: "..x..", "..y)
 end
 
 function end_contact(a, b, coll)
@@ -17,50 +20,17 @@ function love.load()
   world = love.physics.newWorld(0, 0, true)
   world:setCallbacks(start_contact, end_contact)
   objects = {
-    bot1 = {
-      body = love.physics.newBody(world, 400, 200, 'dynamic'),
-      shape = love.physics.newCircleShape(50),
-      restitution = 0.4,
-      mass = 5,
-      name = "Bot1"
-    },
-    bot2 = {
-      body = love.physics.newBody(world, 200, 200, 'dynamic'),
-      shape = love.physics.newCircleShape(50),
-      restitution = 0.4,
-      mass = 5,
-      name = "Bot2"
-    },
-    box = {
-      body = love.physics.newBody(world, 400, 400, 'static'),
-      shape = love.physics.newRectangleShape(200,50),
-      name = "Box"
-    },
-    topEdge = {
-      body = love.physics.newBody(world, 0, 0, 'static'),
-      shape = love.physics.newEdgeShape(0, 0, width, 0),
-      name = "Arena top edge"
-    },
-    bottomEdge = {
-      body = love.physics.newBody(world, 0, 0, 'static'),
-      shape = love.physics.newEdgeShape(0, 0, 0, height),
-      name = "Arena bottom edge"
-    },
-    leftEdge = {
-      body = love.physics.newBody(world, 0, 0, 'static'),
-      shape = love.physics.newEdgeShape(width, height, width, 0),
-      name = "Arena left edge"
-    },
-    rightEdge = {
-      body = love.physics.newBody(world, 0, 0, 'static'),
-      shape = love.physics.newEdgeShape(width, height, 0, height),
-      name = "Arena right edge"
-    }
+    bot1 = Bot(love, world, 'Bot 1', 400, 200),
+    bot2 = Bot(love, world, 'Bot 2', 200, 200),
+    topEdge = Edge(love, world, 'Top edge', 0, 0, width, 0),
+    bottomEdge = Edge(love, world, 'Bottom edge', 0, 0, 0, height),
+    leftEdge = Edge(love, world, 'Top edge', width, height, width, 0),
+    rightEdge = Edge(love, world, 'Top edge', width, height, 0, height)
   }
   for _, object in pairs(objects) do
     object.fixture = love.physics.newFixture(object.body, object.shape)
     if object.restitution then object.fixture:setRestitution(object.restitution) end
-    object.fixture:setUserData(object.name)
+    object.fixture:setUserData(object.data)
   end
 
   love.window.setMode(width, height)
@@ -89,5 +59,4 @@ end
 function love.draw()
   love.graphics.circle("line", objects.bot1.body:getX(),objects.bot1.body:getY(), objects.bot1.shape:getRadius(), 20)
   love.graphics.circle("line", objects.bot2.body:getX(),objects.bot2.body:getY(), objects.bot2.shape:getRadius(), 20)
-  love.graphics.polygon("line", objects.box.body:getWorldPoints(objects.box.shape:getPoints()))
 end
