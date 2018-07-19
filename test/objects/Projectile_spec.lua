@@ -4,34 +4,38 @@ local mach = require('mach')
 describe('Projectile', function()
   local love = {
     physics = {
-      newBody = function () end,
+      newBody = function () return { applyForce = function() end } end,
       newCircleShape = function () end
     }
   }
 
-  it('should initialize love objects', function()
-    local mock_love = {
-      physics = {
-        newBody = mach.mock_function('newBody'),
-        newCircleShape = mach.mock_function('newCircleShape'),
-      }
+  local love_mock = {
+    physics = {
+      newBody = mach.mock_function('newBody'),
+      newCircleShape = mach.mock_function('newCircleShape'),
     }
+  }
+
+  local bot1 = { body = { getPosition = function() return 1, 2 end }}
+  local bot2 = { body = { getPosition = function() return 4, 5 end }}
+
+  it('should initialize love objects', function()
     local world = { 1 }
-    local body = { 2 }
+    local body = { applyForce = function() end }
     local shape = { 3 }
 
-    mock_love.physics.newBody:
+    love_mock.physics.newBody:
       should_be_called_with(world, 3, 4, 'dynamic'):
       and_will_return(body):
-      and_also(mock_love.physics.newCircleShape:should_be_called_with_any_arguments()):
+      and_also(love_mock.physics.newCircleShape:should_be_called_with_any_arguments()):
       and_will_return(shape):
       when(function()
-        Projectile(mock_love, world, '', 3, 4)
+        Projectile(love_mock, world, '', 3, 4, bot1, bot2)
       end)
   end)
 
-  it('should initialize provided default values', function()
-    local projectile = Projectile(love, world, 'some name', 3, 4)
+  it('should initialize using the provided values', function()
+    local projectile = Projectile(love, world, 'some name', 3, 4, bot1, bot2)
     assert.are.same('some name', projectile.data.name)
     assert.are.same('circle', projectile.data.graphicsType)
     assert.are.same('projectile', projectile.data.objectType)
@@ -40,8 +44,26 @@ describe('Projectile', function()
     assert.are.same(false, projectile.data.is_marked_for_deletion())
   end)
 
+  it('should have an initial velocity from the first object towards the second', function()
+    local origin = { body = { getPosition = mach.mock_function('getPositionBot1')}}
+    local target = { body = { getPosition = mach.mock_function('getPositionBot2')}}
+    local body_mock = { applyForce = mach.mock_function('applyForce')}
+
+    love_mock.physics.newBody:should_be_called_with_any_arguments():
+      and_will_return(body_mock):
+      and_then(love_mock.physics.newCircleShape:should_be_called_with_any_arguments()):
+      and_then(origin.body.getPosition:should_be_called_with(origin.body)):
+      and_will_return(1, 2):
+      and_then(target.body.getPosition:should_be_called_with(target.body)):
+      and_will_return(3, 5):
+      and_then(body_mock.applyForce:should_be_called_with(body_mock, -200, -300)):
+      when(function()
+        Projectile(love_mock, world, '', 3, 4, origin, target)
+      end)
+  end)
+
   it('should destroy itself when it collides with a bot', function()
-      local projectile = Projectile(love, world, 'some name', 3, 4)
+      local projectile = Projectile(love, world, 'some name', 3, 4, bot1, bot2)
       projectile.data.collision_callback({ objectType = 'bot' })
       assert.are.same(true, projectile.data.is_marked_for_deletion())
   end)

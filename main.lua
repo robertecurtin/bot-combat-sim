@@ -8,6 +8,9 @@ local objects = {}
 local width = 800
 local height = 800
 
+local bot1
+local bot2
+
 function on_collision(a, b, coll)
     x,y = coll:getNormal()
     local a_data = a:getUserData()
@@ -29,13 +32,16 @@ function love.load()
   world = love.physics.newWorld(0, 0, true)
   world:setCallbacks(on_collision)
 
+  bot1 = Bot(love, world, 'Bot 1', 400, 200)
+  bot2 = Bot(love, world, 'Bot 2', 200, 200)
+
   initialObjects = {
-    bot1 = Bot(love, world, 'Bot 1', 400, 200),
-    bot2 = Bot(love, world, 'Bot 2', 200, 200),
-    topEdge = Edge(love, world, 'Top edge', 0, 0, width, 0),
-    bottomEdge = Edge(love, world, 'Bottom edge', 0, 0, 0, height),
-    leftEdge = Edge(love, world, 'Left edge', width, height, width, 0),
-    rightEdge = Edge(love, world, 'Right edge', width, height, 0, height)
+    bot1,
+    bot2,
+    Edge(love, world, 'Top edge', 0, 0, width, 0),
+    Edge(love, world, 'Bottom edge', 0, 0, 0, height),
+    Edge(love, world, 'Left edge', width, height, width, 0),
+    Edge(love, world, 'Right edge', width, height, 0, height)
   }
 
   for _, object in pairs(initialObjects) do
@@ -62,7 +68,7 @@ function love.update(dt)
 end
 
 local function CreateProjectile()
-  add_object(Projectile(love, world, 'projectile', 200, 200))
+  add_object(Projectile(love, world, 'projectile', 200, 200, bot1, bot2))
 end
 
 function love.keypressed(key)
