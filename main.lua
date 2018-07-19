@@ -68,7 +68,7 @@ function love.update(dt)
 end
 
 local function CreateProjectile()
-  add_object(Projectile(love, world, 'projectile', 200, 200, bot1, bot2))
+  add_object(Projectile(love, world, 'projectile', bot1, bot2))
 end
 
 function love.keypressed(key)

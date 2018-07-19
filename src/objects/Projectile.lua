@@ -1,24 +1,42 @@
-local function calculate_initial_force(origin, target)
+
+local function calculate_unit_vector(x1, y1, x2, y2)
+  local angle = math.atan2(x2 - x1, y2 - y1)
+  return { x = math.sin(angle), y = math.cos(angle) }
+end
+
+local function calculate_initial_location_and_force(origin, target)
     local x_origin
     local y_origin
     local x_target
     local y_target
-    local speed = 100
+    local speed = 3000
+    local distance = 70
 
     x_origin, y_origin = origin.body:getPosition()
     x_target, y_target = target.body:getPosition()
-    return speed * (x_origin - x_target), speed * (y_origin - y_target)
+    unit_vector = calculate_unit_vector(
+      x_origin, y_origin, x_target, y_target)
+
+    return {
+      force = {
+        x = speed * unit_vector.x,
+        y = speed * unit_vector.y
+      },
+      location = {
+        x = x_origin + (70 * unit_vector.x),
+        y = y_origin + (70 * unit_vector.y)
+      }
+    }
 end
 
-return function(love, world, name, x, y, origin, target)
-  local radius = 10
-  local mass = 5
-  local restitution = 0.4
+return function(love, world, name, origin, target)
   local marked_for_deletion = false
+  local initial_physics = calculate_initial_location_and_force(origin, target)
 
   local projectile = {
-    body = love.physics.newBody(world, x, y, 'dynamic'),
-    shape = love.physics.newCircleShape(10),
+    body = love.physics.newBody(
+      world, initial_physics.location.x, initial_physics.location.y, 'dynamic'),
+    shape = love.physics.newCircleShape(3),
     restitution = 0.4,
     mass = 5,
     data = {
@@ -34,6 +52,6 @@ return function(love, world, name, x, y, origin, target)
     }
   }
 
-  projectile.body:applyForce(calculate_initial_force(origin, target))
+  projectile.body:applyForce(initial_physics.force.x, initial_physics.force.y)
   return projectile
 end
