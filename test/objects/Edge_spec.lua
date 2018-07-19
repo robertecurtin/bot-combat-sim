@@ -34,5 +34,7 @@ describe('Edge', function()
 
     local edge = Edge(love, world, 'some name', 1, 2, 3, 4)
     assert.are.same('some name', edge.data.name)
+    assert.are.same('environment', edge.data.objectType)
+    assert.are.same(false, edge.data.is_marked_for_deletion())
   end)
 end)
