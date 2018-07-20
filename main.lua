@@ -67,6 +67,8 @@ function love.update(dt)
   elseif love.keyboard.isDown("down") then
       objects[1].body:applyForce(0, force)
   end
+    add_object(Projectile(love, world, 'projectile', bot1, bot2))
+      add_object(Projectile(love, world, 'projectile', bot2, bot1))
 end
 
 local function CreateProjectile()
