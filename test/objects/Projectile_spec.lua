@@ -1,4 +1,5 @@
 local Projectile = require('objects/Projectile')
+local categories = require('objects/categories')
 local mach = require('mach')
 
 describe('Projectile', function()
@@ -16,8 +17,14 @@ describe('Projectile', function()
     }
   }
 
-  local bot1 = { body = { getPosition = function() return 1, 2 end }}
-  local bot2 = { body = { getPosition = function() return 3, 4 end }}
+  local bot1 = {
+    body = { getPosition = function() return 1, 2 end },
+    data = { category = categories.team1 }
+  }
+  local bot2 = {
+    body = { getPosition = function() return 3, 4 end },
+    data = { category = categories.team2 }
+  }
 
   it('should initialize love objects', function()
     local world = { 1 }
@@ -38,15 +45,29 @@ describe('Projectile', function()
     local projectile = Projectile(love, world, 'some name', bot1, bot2)
     assert.are.same('some name', projectile.data.name)
     assert.are.same('circle', projectile.data.graphicsType)
-    assert.are.same('projectile', projectile.data.objectType)
+    assert.are.same(categories.projectile, projectile.data.category)
     assert.are.are_not_equal(null, projectile.restitution)
     assert.are.are_not_equal(null, projectile.mass)
     assert.are.same(false, projectile.data.is_marked_for_deletion())
   end)
 
+  it('should set its mask based on the bot origin', function()
+    local projectile = Projectile(love, world, 'some name', bot1, bot2)
+    assert.are.same(categories.team1, projectile.mask)
+
+    local another_projectile = Projectile(love, world, 'some name', bot2, bot1)
+    assert.are.same(categories.team2, another_projectile.mask)
+  end)
+
   it('should have an initial velocity from the first object towards the second', function()
-    local origin = { body = { getPosition = mach.mock_function('getPositionBot1')}}
-    local target = { body = { getPosition = mach.mock_function('getPositionBot2')}}
+    local origin = {
+      body = { getPosition = mach.mock_function('getPositionBot1')},
+      data = { category = categories.team1 }
+    }
+    local target = {
+      body = { getPosition = mach.mock_function('getPositionBot2')},
+      data = { category = categories.team2 }
+    }
     local body_mock = { applyForce = mach.mock_function('applyForce')}
 
     origin.body.getPosition:should_be_called_with(origin.body):
@@ -62,15 +83,21 @@ describe('Projectile', function()
       end)
   end)
 
-  it('should destroy itself when it collides with a bot', function()
+  it('should destroy itself when it collides with a bot from team 1', function()
       local projectile = Projectile(love, world, 'some name', bot1, bot2)
-      projectile.data.collision_callback({ objectType = 'bot' })
+      projectile.data.collision_callback({ category = categories.team1 })
+      assert.are.same(true, projectile.data.is_marked_for_deletion())
+  end)
+
+  it('should destroy itself when it collides with a bot from team 2', function()
+      local projectile = Projectile(love, world, 'some name', bot1, bot2)
+      projectile.data.collision_callback({ category = categories.team2 })
       assert.are.same(true, projectile.data.is_marked_for_deletion())
   end)
 
   it('should destroy itself when it collides with a wall', function()
       local projectile = Projectile(love, world, 'some name', bot1, bot2)
-      projectile.data.collision_callback({ objectType = 'environment' })
+      projectile.data.collision_callback({ category = categories.environment })
       assert.are.same(true, projectile.data.is_marked_for_deletion())
   end)
 end)

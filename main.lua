@@ -23,7 +23,9 @@ end
 
 function add_object(object)
   object.fixture = love.physics.newFixture(object.body, object.shape)
+  object.fixture:setCategory(object.data.category)
   if object.restitution then object.fixture:setRestitution(object.restitution) end
+  if object.mask then object.fixture:setMask(object.mask) end
   object.fixture:setUserData(object.data)
   table.insert(objects, object)
 end
@@ -31,9 +33,8 @@ end
 function love.load()
   world = love.physics.newWorld(0, 0, true)
   world:setCallbacks(on_collision)
-
-  bot1 = Bot(love, world, 'Bot 1', 400, 200)
-  bot2 = Bot(love, world, 'Bot 2', 200, 200)
+  bot1 = Bot(love, world, 'Bot 1', 400, 200, 'team1')
+  bot2 = Bot(love, world, 'Bot 2', 200, 200, 'team2')
 
   initialObjects = {
     bot1,
@@ -60,6 +61,7 @@ function love.update(dt)
   elseif love.keyboard.isDown("left") then
       objects[1].body:applyForce(-force, 0)
   end
+
   if love.keyboard.isDown("up") then
       objects[1].body:applyForce(0, -force)
   elseif love.keyboard.isDown("down") then

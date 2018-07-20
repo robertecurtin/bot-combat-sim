@@ -1,4 +1,5 @@
 local Bot = require('objects/Bot')
+local categories = require('objects/categories')
 local mach = require('mach')
 
 describe('Bot', function()
@@ -32,12 +33,25 @@ describe('Bot', function()
       }
     }
 
-    local bot = Bot(love, world, 'some name', 3, 4)
+    local bot = Bot(love, world, 'some name', 3, 4, 'team1')
     assert.are.same('some name', bot.data.name)
     assert.are.same('circle', bot.data.graphicsType)
-    assert.are.same('bot', bot.data.objectType)
+    assert.are.same(categories.team1, bot.data.category)
     assert.are.are_not_equal(null, bot.restitution)
     assert.are.are_not_equal(null, bot.mass)
     assert.are.same(false, bot.data.is_marked_for_deletion())
+  end)
+
+  it('should initialize different default values', function()
+    local love = {
+      physics = {
+        newBody = function () end,
+        newCircleShape = function () end
+      }
+    }
+
+    local bot = Bot(love, world, 'another name', 3, 4, 'team2')
+    assert.are.same('another name', bot.data.name)
+    assert.are.same(categories.team2, bot.data.category)
   end)
 end)
