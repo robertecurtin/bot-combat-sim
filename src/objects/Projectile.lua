@@ -1,4 +1,3 @@
-
 local function calculate_unit_vector(x1, y1, x2, y2)
   local angle = math.atan2(x2 - x1, y2 - y1)
   return { x = math.sin(angle), y = math.cos(angle) }
@@ -44,7 +43,7 @@ return function(love, world, name, origin, target)
       graphicsType = 'circle',
       objectType = 'projectile',
       collision_callback = function(o)
-        if o.objectType == 'bot' then
+        if o.objectType == 'bot' or o.objectType == 'environment' then
           marked_for_deletion = true
         end
       end,
