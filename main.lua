@@ -2,6 +2,7 @@ local Bot = require 'src/objects/Bot'
 local Edge = require 'src/objects/Edge'
 local Projectile = require 'src/objects/Projectile'
 local categories = require 'src/objects/categories'
+local colors = require 'src/objects/colors'
 
 local world
 local objects = {}
@@ -64,6 +65,8 @@ function love.load()
   love.window.setMode(width, height)
 end
 
+local projectile_timer = 0
+
 function love.update(dt)
   world:update(dt)
 
@@ -79,8 +82,13 @@ function love.update(dt)
   elseif love.keyboard.isDown("down") then
       objects[1].body:applyForce(0, force)
   end
+
+  projectile_timer = projectile_timer + dt
+  if projectile_timer > 1 then
+    projectile_timer = 0
     add_object(Projectile(love, world, 'projectile', bot1, bot2))
     add_object(Projectile(love, world, 'projectile', bot2, bot1))
+  end
 end
 
 local function CreateProjectile()
@@ -101,11 +109,16 @@ local function remove_objects_marked_for_deletion()
   end
 end
 
+local function draw_circle(object)
+  love.graphics.setColor(colors[object.data.category])
+  love.graphics.circle("line", object.body:getX(),object.body:getY(), object.shape:getRadius())
+end
+
 function love.draw()
   remove_objects_marked_for_deletion()
   for _, object in pairs(objects) do
     if(object.data.graphicsType == 'circle') then
-      love.graphics.circle("line", object.body:getX(),object.body:getY(), object.shape:getRadius())
+      draw_circle(object)
     end
   end
 end
