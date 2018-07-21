@@ -17,7 +17,6 @@ function on_collision(a, b, coll)
     local a_data = a:getUserData()
     local b_data = b:getUserData()
 
-    print("\n"..a_data.name.." colliding with "..b_data.name.." with a vector normal of: "..x..", "..y)
     if a_data.collision_callback then a_data.collision_callback(b_data) end
     if b_data.collision_callback then b_data.collision_callback(a_data) end
 end
