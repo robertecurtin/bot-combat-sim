@@ -5,7 +5,7 @@ return function(love, world, name, x1, y1, x2, y2)
     data = {
       name = name,
       category = 'environment',
-      is_marked_for_deletion = function() return false end
+      is_alive = function() return true end
     }
   }
 end

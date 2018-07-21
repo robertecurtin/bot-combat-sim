@@ -29,7 +29,7 @@ describe('Edge', function()
   end
 
   local function it_should_be_alive()
-    assert.are.equal(false, edge.data.is_marked_for_deletion())
+    assert.are.equal(true, edge.data.is_alive())
   end
 
   it('should initialize using the provided default values', function()

@@ -65,7 +65,7 @@ describe('Projectile', function()
   end
 
   local function it_should_be(alive)
-    assert.are.equal(not alive, projectile.data.is_marked_for_deletion())
+    assert.are.equal(alive, projectile.data.is_alive())
   end
 
   local a_position = { x = 3, y = 4 }

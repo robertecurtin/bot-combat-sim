@@ -24,6 +24,10 @@ describe('Bot', function()
       end)
   end
 
+  local function when_it_collides_with_an_object_with_category(category)
+    bot.data.collision_callback({ category = category })
+  end
+
   local function its_name_should_be(expected)
     assert.are.same(expected, bot.data.name)
   end
@@ -49,7 +53,7 @@ describe('Bot', function()
   end
 
   local function it_should_be(alive)
-    assert.are.equal(not alive, bot.data.is_marked_for_deletion())
+    assert.are.equal(alive, bot.data.is_alive())
   end
 
   it('should initialize using the provided default values', function()
@@ -83,6 +87,57 @@ describe('Bot', function()
   end)
 
   it('should take damage when it collides with a projectile', function()
-
+    given_the_bot_is_initialized_with({
+      name = '',
+      x = 3,
+      y = 4,
+      team = 'team2',
+      health = 5
+    })
+    when_it_collides_with_an_object_with_category('projectile')
+    its_health_should_be(4)
+    when_it_collides_with_an_object_with_category('projectile')
+    its_health_should_be(3)
   end)
+
+  it('should not take damage when it collides with another bot', function()
+    given_the_bot_is_initialized_with({
+      name = '',
+      x = 3,
+      y = 4,
+      team = 'team2',
+      health = 5
+    })
+    when_it_collides_with_an_object_with_category('team1')
+    its_health_should_be(5)
+    when_it_collides_with_an_object_with_category('team2')
+    its_health_should_be(5)
+  end)
+
+  it('should not take damage when it collides with a wall', function()
+    given_the_bot_is_initialized_with({
+      name = '',
+      x = 3,
+      y = 4,
+      team = 'team2',
+      health = 5
+    })
+    when_it_collides_with_an_object_with_category('environment')
+    its_health_should_be(5)
+  end)
+
+  it('should die when it loses all its health', function()
+    given_the_bot_is_initialized_with({
+      name = '',
+      x = 3,
+      y = 4,
+      team = 'team2',
+      health = 2
+    })
+    when_it_collides_with_an_object_with_category('projectile')
+    it_should_be(ALIVE)
+    when_it_collides_with_an_object_with_category('projectile')
+    it_should_be(DEAD)
+  end)
+
 end)

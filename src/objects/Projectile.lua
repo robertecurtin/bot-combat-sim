@@ -31,7 +31,7 @@ local function calculate_initial_location_and_force(origin, target)
 end
 
 return function(love, world, name, origin, target)
-  local marked_for_deletion = false
+  local alive = true
   local initial_physics = calculate_initial_location_and_force(origin, target)
   local projectile = {
     body = love.physics.newBody(
@@ -46,10 +46,10 @@ return function(love, world, name, origin, target)
       category = 'projectile',
       collision_callback = function(o)
         if o.category ~= 'projectile' then
-          marked_for_deletion = true
+          alive = false
         end
       end,
-      is_marked_for_deletion = function() return marked_for_deletion end
+      is_alive = function() return alive end
     }
   }
 
