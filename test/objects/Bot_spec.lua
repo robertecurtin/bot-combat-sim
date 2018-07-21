@@ -3,8 +3,6 @@ local mach = require('mach')
 
 describe('Bot', function()
   local world = {}
-  local body = {}
-  local shape = {}
 
   local bot
   local love = {
@@ -14,52 +12,50 @@ describe('Bot', function()
     }
   }
 
-  local Alive = true
-  local Dead = false
+  local ALIVE = true
+  local DEAD = false
 
   local function given_the_bot_is_initialized_with(name, x, y, team)
-      love.physics.newBody:
-        should_be_called_with(world, x, y, 'dynamic'):
-        and_will_return(body):
-        and_also(love.physics.newCircleShape:should_be_called_with_any_arguments()):
-        and_will_return(shape):
-        when(function()
-          bot = Bot(love, world, name, x, y, team)
+    love.physics.newBody:
+      should_be_called_with(world, x, y, 'dynamic'):
+      and_also(love.physics.newCircleShape:should_be_called_with_any_arguments()):
+      when(function()
+        bot = Bot(love, world, name, x, y, team)
       end)
   end
 
-local function the_name_should_be(expected)
-  assert.are.same(expected, bot.data.name)
-end
+  local function the_name_should_be(expected)
+    assert.are.same(expected, bot.data.name)
+  end
 
-local function the_category_should_be(expected)
-  assert.are.same(expected, bot.data.category)
-end
+  local function the_category_should_be(expected)
+    assert.are.same(expected, bot.data.category)
+  end
 
-local function the_graphics_type_should_be(expected)
-  assert.are.same(expected, bot.data.graphicsType)
-end
+  local function the_graphics_type_should_be(expected)
+    assert.are.same(expected, bot.data.graphicsType)
+  end
 
-local function it_should_have_a_restitution_value()
-  assert.are.are_not_equal(null, bot.restitution)
-end
+  local function it_should_have_a_restitution_value()
+    assert.are.are_not_equal(null, bot.restitution)
+  end
 
-local function it_should_have_a_mass()
-  assert.are.are_not_equal(null, bot.mass)
-end
+  local function it_should_have_a_mass()
+    assert.are.are_not_equal(null, bot.mass)
+  end
 
-local function it_should_be(alive)
-  assert.are.equal(not alive, bot.data.is_marked_for_deletion())
-end
+  local function it_should_be(alive)
+    assert.are.equal(not alive, bot.data.is_marked_for_deletion())
+  end
 
-  it('should initialize provided default values', function()
+  it('should initialize using the provided default values', function()
     given_the_bot_is_initialized_with('some name', 3, 4, 'team1')
     the_name_should_be('some name')
     the_category_should_be('team1')
     the_graphics_type_should_be('circle')
     it_should_have_a_restitution_value()
     it_should_have_a_mass()
-    it_should_be(Alive)
+    it_should_be(ALIVE)
   end)
 
   it('should initialize different default values', function()

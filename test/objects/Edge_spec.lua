@@ -2,6 +2,8 @@ local Edge = require('objects/Edge')
 local mach = require('mach')
 
 describe('Edge', function()
+  local edge
+  local world = {}
   local love = {
     physics = {
       newBody = mach.mock_function('newBody'),
@@ -9,32 +11,31 @@ describe('Edge', function()
     }
   }
 
-  it('should initialize love objects', function()
-    local world = { 1 }
-    local body = { 2 }
-    local shape = { 3 }
-
+  local function given_the_edge_is_initialized_with(name, x1, y1, x2, y2)
     love.physics.newBody:
       should_be_called_with(world, 0, 0, 'static'):
-      and_will_return(body):
-      and_also(love.physics.newEdgeShape:should_be_called_with(4, 3, 2, 1)):
-      and_will_return(shape):
+      and_also(love.physics.newEdgeShape:should_be_called_with(x1, y1, x2, y2)):
       when(function()
-        Edge(love, world, '', 4, 3, 2, 1)
+        edge = Edge(love, world, name, x1, y1, x2, y2)
       end)
-  end)
+  end
 
-  it('should initialize provided default values', function()
-    local love = {
-      physics = {
-        newBody = function () end,
-        newEdgeShape = function () end
-      }
-    }
+  local function the_name_should_be(expected)
+    assert.are.same(expected, edge.data.name)
+  end
 
-    local edge = Edge(love, world, 'some name', 1, 2, 3, 4)
-    assert.are.same('some name', edge.data.name)
-    assert.are.same('environment', edge.data.category)
-    assert.are.same(false, edge.data.is_marked_for_deletion())
+  local function the_category_should_be(expected)
+    assert.are.same(expected, edge.data.category)
+  end
+
+  local function it_should_be_alive()
+    assert.are.equal(false, edge.data.is_marked_for_deletion())
+  end
+
+  it('should initialize using the provided default values', function()
+    given_the_edge_is_initialized_with('some name', 1, 2, 3, 4)
+    the_name_should_be('some name')
+    the_category_should_be('environment')
+    it_should_be_alive()
   end)
 end)
