@@ -9,9 +9,13 @@ AIs are given knowledge of their bot's position, their opponents' / teammates' p
 
 ### Todo
 Give AIs visibility to projectiles so they can dodge
+
 Limit firing rate of bots, and expose remaining time to each AI
+
 Add ability for AIs to choose starting stats (speed / firing rate / damage) within limits
+
 Add special projectile abilities (damage over time, heal allies, slow target, etc)
+
 Consider opening issues for these instead of having a todo list
 
 ### How to run
