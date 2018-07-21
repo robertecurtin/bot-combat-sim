@@ -3,6 +3,7 @@ local Edge = require 'src/objects/Edge'
 local Projectile = require 'src/objects/Projectile'
 local categories = require 'src/objects/categories'
 local colors = require 'src/objects/colors'
+local ai = require 'src/ai/config'
 
 local world
 local objects = {}
@@ -10,8 +11,7 @@ local objects = {}
 local width = 800
 local height = 800
 
-local bot1
-local bot2
+local bots
 
 function on_collision(a, b, coll)
     x,y = coll:getNormal()
@@ -42,12 +42,14 @@ end
 function love.load()
   world = love.physics.newWorld(0, 0, true)
   world:setCallbacks(on_collision)
-  bot1 = Bot(love, world, 'Bot 1', 400, 200, 'team1')
-  bot2 = Bot(love, world, 'Bot 2', 200, 200, 'team2')
+  bots = {
+  Bot(love, world, 'Bot 1', 400, 200, 'team1'),
+  Bot(love, world, 'Bot 2', 200, 200, 'team2')
+  }
 
   initialObjects = {
-    bot1,
-    bot2,
+    bots[1],
+    bots[2],
     Edge(love, world, 'Top edge', 0, 0, width, 0),
     Edge(love, world, 'Bottom edge', 0, 0, 0, height),
     Edge(love, world, 'Left edge', width, height, width, 0),
@@ -63,37 +65,33 @@ end
 
 local projectile_timer = 0
 
+local function CreateProjectile(source, target)
+  add_object(Projectile(love, world, 'projectile', source, target))
+end
+
 function love.update(dt)
   world:update(dt)
-
   local force = 300
-  if love.keyboard.isDown("right") then
-      objects[1].body:applyForce(force, 0)
-  elseif love.keyboard.isDown("left") then
-      objects[1].body:applyForce(-force, 0)
-  end
+  bot1_x, bot1_y = bots[1].body:getPosition()
+  bot2_x, bot2_y = bots[2].body:getPosition()
 
-  if love.keyboard.isDown("up") then
-      objects[1].body:applyForce(0, -force)
-  elseif love.keyboard.isDown("down") then
-      objects[1].body:applyForce(0, force)
-  end
+  local bot1_move = ai.bot1(
+    { x = bot1_x, y = bot1_y },
+    { x = bot2_x, y = bot2_y },
+    dt)
 
-  projectile_timer = projectile_timer + dt
-  if projectile_timer > 1 then
-    projectile_timer = 0
-    target_bot1_x, target_bot1_y = bot2.body:getPosition()
-    target_bot1 = { x = target_bot1_x, y = target_bot1_y }
-    target_bot2_x, target_bot2_y = bot1.body:getPosition()
-    target_bot2 = { x = target_bot2_x, y = target_bot2_y }
-    add_object(Projectile(love, world, 'projectile', bot1, target_bot1))
-    add_object(Projectile(love, world, 'projectile', bot2, target_bot2))
-  end
+  local bot2_move = ai.bot2(
+    { x = bot2_x, y = bot2_y },
+    { x = bot1_x, y = bot1_y },
+    dt)
+
+  bots[1].body:applyForce(force * bot1_move.force.x, force * bot1_move.force.y)
+  bots[2].body:applyForce(force * bot2_move.force.x, force * bot2_move.force.y)
+
+  if bot1_move.fire then CreateProjectile(bots[1], bot1_move.target) end
+  if bot2_move.fire then CreateProjectile(bots[2], bot2_move.target) end
 end
 
-local function CreateProjectile()
-  add_object(Projectile(love, world, 'projectile', bot1, bot2))
-end
 
 function love.keypressed(key)
   if key == 'x' then love.event.quit() end
