@@ -36,16 +36,24 @@ describe('Projectile', function()
       end)
   end
 
-  local function the_name_should_be(expected)
+  local function when_it_collides_with_an_object_with_category(category)
+    projectile.data.collision_callback({ category = category })
+  end
+
+  local function its_name_should_be(expected)
     assert.are.same(expected, projectile.data.name)
   end
 
-  local function the_category_should_be(expected)
+  local function its_category_should_be(expected)
     assert.are.same(expected, projectile.data.category)
   end
 
-  local function the_graphics_type_should_be(expected)
+  local function its_graphics_type_should_be(expected)
     assert.are.same(expected, projectile.data.graphicsType)
+  end
+
+  local function its_mask_should_be(expected)
+    assert.are.same(expected, projectile.mask)
   end
 
   local function it_should_have_a_restitution_value()
@@ -79,9 +87,9 @@ describe('Projectile', function()
 
   it('should initialize using the provided values', function()
     given_the_projectile_is_initialized_with('some name', bot1, a_position)
-    the_name_should_be('some name')
-    the_graphics_type_should_be('circle')
-    the_category_should_be('projectile')
+    its_name_should_be('some name')
+    its_graphics_type_should_be('circle')
+    its_category_should_be('projectile')
     it_should_have_a_restitution_value()
     it_should_have_a_mass()
     it_should_be(ALIVE)
@@ -89,27 +97,27 @@ describe('Projectile', function()
 
   it('should not collide with other projectiles or the originating bots team', function()
     given_the_projectile_is_initialized_with('some name', bot1, a_position)
-    assert.are.same({ 'projectile', 'team1' }, projectile.mask)
+    its_mask_should_be({ 'projectile', 'team1' })
 
     given_the_projectile_is_initialized_with('some name', bot2, a_position)
-    assert.are.same({ 'projectile', 'team2' }, projectile.mask)
+    its_mask_should_be({ 'projectile', 'team2' })
   end)
 
   it('should destroy itself when it collides with a bot from team 1', function()
     given_the_projectile_is_initialized_with('some name', bot2, a_position)
-    projectile.data.collision_callback({ category = 'team1' })
+    when_it_collides_with_an_object_with_category('team1')
     it_should_be(DEAD)
   end)
 
   it('should destroy itself when it collides with a bot from team 2', function()
     given_the_projectile_is_initialized_with('some name', bot1, a_position)
-    projectile.data.collision_callback({ category = 'team2' })
+    when_it_collides_with_an_object_with_category('team2')
     it_should_be(DEAD)
   end)
 
   it('should destroy itself when it collides with a wall', function()
     given_the_projectile_is_initialized_with('some name', bot1, a_position)
-    projectile.data.collision_callback({ category = 'environment' })
+    when_it_collides_with_an_object_with_category('environment')
     it_should_be(DEAD)
   end)
 end)
