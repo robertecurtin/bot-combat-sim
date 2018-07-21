@@ -88,7 +88,7 @@ function love.update(dt)
   local winner = check_for_winner()
   if not winner then
     for i, bot in ipairs(bots) do
-      local bot_move = ai.bot1(bots, i, dt)
+      local bot_move = ai[i](bots, i, dt)
       bot.body:applyForce(force * bot_move.force.x, force * bot_move.force.y)
       if bot_move.fire then create_projectile(bot, bot_move.target) end
     end

@@ -1,6 +1,8 @@
-bot1 = require 'src/ai/random'
+random_bot = require 'src/ai/random'
 
 return {
-  bot1 = bot1,
-  bot2 = bot1
+  random_bot,
+  random_bot,
+  random_bot,
+  random_bot
 }
