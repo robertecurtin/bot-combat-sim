@@ -139,5 +139,4 @@ describe('Bot', function()
     when_it_collides_with_an_object_with_category('projectile')
     it_should_be(DEAD)
   end)
-
 end)
