@@ -1,19 +1,15 @@
 return function(love, world, name, x, y, team)
-  local radius = 50
-  local mass = 5
-  local restitution = 0.4
-
-  local bot = {
+  local marked_for_deletion = false
+  return {
     body = love.physics.newBody(world, x, y, 'dynamic'),
     shape = love.physics.newCircleShape(10),
-    restitution = 0.4,
+    restitution = 0.1,
     mass = 5,
     data = {
       name = name,
       graphicsType = 'circle',
       category = team,
-      is_marked_for_deletion = function() return false end
+      is_marked_for_deletion = function() return marked_for_deletion end
     }
   }
-    return bot
 end
