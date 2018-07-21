@@ -44,14 +44,10 @@ function love.load()
   world:setCallbacks(on_collision)
   bot1 = Bot(love, world, 'Bot 1', 400, 200, 'team1')
   bot2 = Bot(love, world, 'Bot 2', 200, 200, 'team2')
-  bot3 = Bot(love, world, 'Bot 3', 400, 400, 'team1')
-  bot4 = Bot(love, world, 'Bot 4', 200, 400, 'team2')
 
   initialObjects = {
     bot1,
     bot2,
-    bot3,
-    bot4,
     Edge(love, world, 'Top edge', 0, 0, width, 0),
     Edge(love, world, 'Bottom edge', 0, 0, 0, height),
     Edge(love, world, 'Left edge', width, height, width, 0),
@@ -86,8 +82,12 @@ function love.update(dt)
   projectile_timer = projectile_timer + dt
   if projectile_timer > 1 then
     projectile_timer = 0
-    add_object(Projectile(love, world, 'projectile', bot1, bot2))
-    add_object(Projectile(love, world, 'projectile', bot2, bot1))
+    target_bot1_x, target_bot1_y = bot2.body:getPosition()
+    target_bot1 = { x = target_bot1_x, y = target_bot1_y }
+    target_bot2_x, target_bot2_y = bot1.body:getPosition()
+    target_bot2 = { x = target_bot2_x, y = target_bot2_y }
+    add_object(Projectile(love, world, 'projectile', bot1, target_bot1))
+    add_object(Projectile(love, world, 'projectile', bot2, target_bot2))
   end
 end
 

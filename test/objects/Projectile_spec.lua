@@ -28,23 +28,25 @@ describe('Projectile', function()
     data = { category = 'team2' }
   }
 
+  local a_position = { x = 3, y = 4 }
+
   it('should initialize love objects', function()
     local world = { 1 }
     local body = { applyForce = function() end }
     local shape = { 3 }
 
     love_mock.physics.newBody:
-    should_be_called_with(world, 1 + 70 * math.sin(math.pi / 4), 2 + 70 * math.cos(math.pi / 4), 'dynamic'):
+    should_be_called_with(world, 1 + 30 * math.sin(math.pi / 4), 2 + 30 * math.cos(math.pi / 4), 'dynamic'):
     and_will_return(body):
     and_also(love_mock.physics.newCircleShape:should_be_called_with_any_arguments()):
     and_will_return(shape):
     when(function()
-      Projectile(love_mock, world, '', bot1, bot2)
+      Projectile(love_mock, world, '', bot1, { x = 3, y = 4 })
     end)
   end)
 
   it('should initialize using the provided values', function()
-    local projectile = Projectile(love, world, 'some name', bot1, bot2)
+    local projectile = Projectile(love, world, 'some name', bot1, a_position)
     assert.are.same('some name', projectile.data.name)
     assert.are.same('circle', projectile.data.graphicsType)
     assert.are.same('projectile', projectile.data.category)
@@ -54,10 +56,10 @@ describe('Projectile', function()
   end)
 
   it('should not collide with other projectiles or the originating bots team', function()
-    local projectile = Projectile(love, world, 'some name', bot1, bot2)
+    local projectile = Projectile(love, world, 'some name', bot1, a_position)
     assert.are.same({ 'projectile', 'team1' }, projectile.mask)
 
-    local another_projectile = Projectile(love, world, 'some name', bot2, bot1)
+    local another_projectile = Projectile(love, world, 'some name', bot2, a_position)
     assert.are.same({ 'projectile', 'team2' }, another_projectile.mask)
   end)
 
@@ -74,31 +76,29 @@ describe('Projectile', function()
 
   origin.body.getPosition:should_be_called_with(origin.body):
     and_will_return(1, 2):
-    and_then(target.body.getPosition:should_be_called_with(target.body)):
-    and_will_return(3, 4):
     and_then(love_mock.physics.newBody:should_be_called_with_any_arguments()):
     and_will_return(body_mock):
     and_then(love_mock.physics.newCircleShape:should_be_called_with_any_arguments()):
     and_then(body_mock.applyForce:should_be_called_with(body_mock, 3000 * math.sin(math.pi / 4), 3000 * math.cos(math.pi / 4))):
     when(function()
-      Projectile(love_mock, world, '', origin, target)
+      Projectile(love_mock, world, '', origin, { x = 3, y = 4 })
     end)
   end)
 
   it('should destroy itself when it collides with a bot from team 1', function()
-    local projectile = Projectile(love, world, 'some name', bot1, bot2)
+    local projectile = Projectile(love, world, 'some name', bot1, { x = 0, y = 0})
     projectile.data.collision_callback({ category = 'team1' })
     assert.are.same(true, projectile.data.is_marked_for_deletion())
   end)
 
   it('should destroy itself when it collides with a bot from team 2', function()
-    local projectile = Projectile(love, world, 'some name', bot1, bot2)
+    local projectile = Projectile(love, world, 'some name', bot1, { x = 0, y = 0})
     projectile.data.collision_callback({ category = 'team2' })
     assert.are.same(true, projectile.data.is_marked_for_deletion())
   end)
 
   it('should destroy itself when it collides with a wall', function()
-    local projectile = Projectile(love, world, 'some name', bot1, bot2)
+    local projectile = Projectile(love, world, 'some name', bot1, { x = 0, y = 0})
     projectile.data.collision_callback({ category = 'environment' })
     assert.are.same(true, projectile.data.is_marked_for_deletion())
   end)

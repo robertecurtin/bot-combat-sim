@@ -6,17 +6,16 @@ local function calculate_unit_vector(x1, y1, x2, y2)
   return { x = math.sin(angle), y = math.cos(angle) }
 end
 
-local prev_time = 0
 local function calculate_initial_location_and_force(origin, target)
     local x_origin
     local y_origin
     local x_target
     local y_target
     local speed = 3000
-    local distance = 70
+    local distance = 30
 
     x_origin, y_origin = origin.body:getPosition()
-    x_target, y_target = target.body:getPosition()
+    x_target, y_target = target.x, target.y
     unit_vector = calculate_unit_vector(
       x_origin, y_origin, x_target, y_target)
 
@@ -26,8 +25,8 @@ local function calculate_initial_location_and_force(origin, target)
         y = speed * unit_vector.y
       },
       location = {
-        x = x_origin + (70 * unit_vector.x),
-        y = y_origin + (70 * unit_vector.y)
+        x = x_origin + (distance * unit_vector.x),
+        y = y_origin + (distance * unit_vector.y)
       }
     }
 end
