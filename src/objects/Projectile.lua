@@ -1,5 +1,4 @@
 local categories = require('src/objects/categories')
-local bit = require('bit')
 
 local function calculate_unit_vector(x1, y1, x2, y2)
   local angle = math.atan2(x2 - x1, y2 - y1)

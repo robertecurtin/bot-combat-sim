@@ -1,4 +1,3 @@
-local bit = require('bit')
 local mach = require('mach')
 
 local Projectile = require('objects/Projectile')
