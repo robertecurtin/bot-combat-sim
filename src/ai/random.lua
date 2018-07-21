@@ -8,7 +8,6 @@ return function (bots, my_index, dt)
   end
 
   local target = enemies[math.random(1, #enemies)]
-  print(target.data.name)
 
   return {
     force = {

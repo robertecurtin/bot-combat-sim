@@ -43,9 +43,9 @@ function love.load()
   world = love.physics.newWorld(0, 0, true)
   world:setCallbacks(on_collision)
   bots = {
-    Bot(love, world, 'Bot 1', 400, 200, 'Team 1', 5),
-    Bot(love, world, 'Bot 2', 400, 400, 'Team 1', 5),
-    Bot(love, world, 'Bot 3', 200, 200, 'Team 2', 5),
+    Bot(love, world, 'Bot 1', 400, 200, 'Team 1', 50),
+    Bot(love, world, 'Bot 2', 400, 400, 'Team 1', 50),
+    Bot(love, world, 'Bot 3', 200, 200, 'Team 2', 50),
     Bot(love, world, 'Bot 4', 200, 400, 'Team 2', 50)
   }
 
@@ -75,7 +75,7 @@ local function check_for_winner()
   for _, bot in ipairs(bots) do
     live_teams[bot.data.category] = true
   end
-  
+
   if not live_teams['Team 1'] and not live_teams['Team 2'] then return 'No one' end
   if not live_teams['Team 1'] then return 'Team 2' end
   if not live_teams['Team 2'] then return 'Team 1' end
