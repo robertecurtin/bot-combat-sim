@@ -1,5 +1,8 @@
 # bot-combat-sim
 
+### Example
+![bot combat](misc/2v2.gif)
+
 ### How to run
 Install [LOVE](https://love2d.org/) and call it from the root directory
 
