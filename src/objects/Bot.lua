@@ -22,9 +22,6 @@ return function(love, world, name, x, y, team, health)
         local x
         local y
         x, y = bot.body:getPosition()
-        print('Getting position')
-        print(x)
-        print(y)
         return { x = x, y = y }
       end
     }

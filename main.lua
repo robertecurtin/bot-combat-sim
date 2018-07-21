@@ -40,22 +40,22 @@ function add_object(object)
 end
 
 function love.load()
-  print('Loading')
   world = love.physics.newWorld(0, 0, true)
   world:setCallbacks(on_collision)
   bots = {
-    Bot(love, world, 'Bot 1', 400, 200, 'team1', 50),
-    Bot(love, world, 'Bot 2', 200, 200, 'team2', 50)
+    Bot(love, world, 'Bot 1', 400, 200, 'Team 1', 5),
+    Bot(love, world, 'Bot 2', 400, 400, 'Team 1', 5),
+    Bot(love, world, 'Bot 3', 200, 200, 'Team 2', 5),
+    Bot(love, world, 'Bot 4', 200, 400, 'Team 2', 50)
   }
 
   initialObjects = {
-    bots[1],
-    bots[2],
     Edge(love, world, 'Top edge', 0, 0, width, 0),
     Edge(love, world, 'Bottom edge', 0, 0, 0, height),
     Edge(love, world, 'Left edge', width, height, width, 0),
     Edge(love, world, 'Right edge', width, height, 0, height)
   }
+  for _, bot in ipairs(bots) do table.insert(initialObjects, bot) end
 
   for _, object in pairs(initialObjects) do
     add_object(object)
@@ -70,18 +70,31 @@ local function create_projectile(source, target)
   add_object(Projectile(love, world, 'projectile', source, target))
 end
 
-function love.update(dt)
-  print('Updating')
-  world:update(dt)
-  local force = 300
-  for i, bot in ipairs(bots) do
-    local bot_move = ai.bot1(bots, i, dt)
-
-    bot.body:applyForce(force * bot_move.force.x, force * bot_move.force.y)
-    if bot_move.fire then create_projectile(bot, bot_move.target) end
+local function check_for_winner()
+  local live_teams = {}
+  for _, bot in ipairs(bots) do
+    live_teams[bot.data.category] = true
   end
+  
+  if not live_teams['Team 1'] and not live_teams['Team 2'] then return 'No one' end
+  if not live_teams['Team 1'] then return 'Team 2' end
+  if not live_teams['Team 2'] then return 'Team 1' end
+  return false
 end
 
+function love.update(dt)
+  world:update(dt)
+  local force = 300
+  local winner = check_for_winner()
+  if not winner then
+    for i, bot in ipairs(bots) do
+      local bot_move = ai.bot1(bots, i, dt)
+      bot.body:applyForce(force * bot_move.force.x, force * bot_move.force.y)
+      if bot_move.fire then create_projectile(bot, bot_move.target) end
+    end
+  end
+  love.graphics.setColor(1, 1, 0, 1)
+end
 
 function love.keypressed(key)
   if key == 'x' then love.event.quit() end
@@ -94,6 +107,12 @@ local function remove_dead_objects()
       table.remove(objects,i)
     end
   end
+
+  for i=#bots,1,-1 do
+    if(bots[i].data.is_alive() == false) then
+      table.remove(bots,i)
+    end
+  end
 end
 
 local function draw_circle(object)
@@ -102,11 +121,16 @@ local function draw_circle(object)
 end
 
 function love.draw()
-  print('Drawing')
   remove_dead_objects()
   for _, object in pairs(objects) do
     if(object.data.graphicsType == 'circle') then
       draw_circle(object)
     end
+  end
+
+  local winner = check_for_winner()
+  if winner then
+    love.graphics.setColor(colors[winner])
+    love.graphics.print(winner .. ' wins!', 360, 200, 0, 1, 1)
   end
 end

@@ -1,6 +1,6 @@
 return {
-  team1 = 1,
-  team2 = 2,
+  ['Team 1'] = 1,
+  ['Team 2'] = 2,
   projectile = 3,
   environment = 4
 }
