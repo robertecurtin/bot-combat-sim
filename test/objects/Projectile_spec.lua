@@ -3,14 +3,8 @@ local mach = require('mach')
 local Projectile = require('objects/Projectile')
 
 describe('Projectile', function()
-    local love = {
-    physics = {
-      newBody = function () return { applyForce = function() end } end,
-      newCircleShape = function () end
-      }
-    }
-
-  local love_mock = {
+  local projectile
+  local love = {
     physics = {
       newBody = mach.mock_function('newBody'),
       newCircleShape = mach.mock_function('newCircleShape'),
@@ -27,6 +21,45 @@ describe('Projectile', function()
     data = { category = 'team2' }
   }
 
+  local body = { applyForce = function () end }
+
+  local ALIVE = true
+  local DEAD = not ALIVE
+
+  local function given_the_projectile_is_initialized_with(name, origin_bot, position)
+    love.physics.newBody:
+      should_be_called_with(world, mach.any, mach.any, 'dynamic'):
+      and_will_return(body):
+      and_also(love.physics.newCircleShape:should_be_called_with_any_arguments()):
+      when(function()
+        projectile = Projectile(love, world, name, origin_bot, position)
+      end)
+  end
+
+  local function the_name_should_be(expected)
+    assert.are.same(expected, projectile.data.name)
+  end
+
+  local function the_category_should_be(expected)
+    assert.are.same(expected, projectile.data.category)
+  end
+
+  local function the_graphics_type_should_be(expected)
+    assert.are.same(expected, projectile.data.graphicsType)
+  end
+
+  local function it_should_have_a_restitution_value()
+    assert.are.are_not_equal(null, projectile.restitution)
+  end
+
+  local function it_should_have_a_mass()
+    assert.are.are_not_equal(null, projectile.mass)
+  end
+
+  local function it_should_be(alive)
+    assert.are.equal(not alive, projectile.data.is_marked_for_deletion())
+  end
+
   local a_position = { x = 3, y = 4 }
 
   it('should initialize love objects', function()
@@ -34,71 +67,49 @@ describe('Projectile', function()
     local body = { applyForce = function() end }
     local shape = { 3 }
 
-    love_mock.physics.newBody:
-    should_be_called_with(world, 1 + 30 * math.sin(math.pi / 4), 2 + 30 * math.cos(math.pi / 4), 'dynamic'):
-    and_will_return(body):
-    and_also(love_mock.physics.newCircleShape:should_be_called_with_any_arguments()):
-    and_will_return(shape):
-    when(function()
-      Projectile(love_mock, world, '', bot1, { x = 3, y = 4 })
-    end)
+    love.physics.newBody:
+      should_be_called_with(world, 1 + 30 * math.sin(math.pi / 4), 2 + 30 * math.cos(math.pi / 4), 'dynamic'):
+      and_will_return(body):
+      and_also(love.physics.newCircleShape:should_be_called_with_any_arguments()):
+      and_will_return(shape):
+      when(function()
+        Projectile(love, world, '', bot1, { x = 3, y = 4 })
+      end)
   end)
 
   it('should initialize using the provided values', function()
-    local projectile = Projectile(love, world, 'some name', bot1, a_position)
-    assert.are.same('some name', projectile.data.name)
-    assert.are.same('circle', projectile.data.graphicsType)
-    assert.are.same('projectile', projectile.data.category)
-    assert.are.are_not_equal(null, projectile.restitution)
-    assert.are.are_not_equal(null, projectile.mass)
-    assert.are.same(false, projectile.data.is_marked_for_deletion())
+    given_the_projectile_is_initialized_with('some name', bot1, a_position)
+    the_name_should_be('some name')
+    the_graphics_type_should_be('circle')
+    the_category_should_be('projectile')
+    it_should_have_a_restitution_value()
+    it_should_have_a_mass()
+    it_should_be(ALIVE)
   end)
 
   it('should not collide with other projectiles or the originating bots team', function()
-    local projectile = Projectile(love, world, 'some name', bot1, a_position)
+    given_the_projectile_is_initialized_with('some name', bot1, a_position)
     assert.are.same({ 'projectile', 'team1' }, projectile.mask)
 
-    local another_projectile = Projectile(love, world, 'some name', bot2, a_position)
-    assert.are.same({ 'projectile', 'team2' }, another_projectile.mask)
-  end)
-
-  it('should have an initial velocity from the first object towards the second', function()
-    local origin = {
-    body = { getPosition = mach.mock_function('getPositionBot1')},
-    data = { category = 'team1' }
-  }
-  local target = {
-    body = { getPosition = mach.mock_function('getPositionBot2')},
-    data = { category = 'team2' }
-  }
-  local body_mock = { applyForce = mach.mock_function('applyForce')}
-
-  origin.body.getPosition:should_be_called_with(origin.body):
-    and_will_return(1, 2):
-    and_then(love_mock.physics.newBody:should_be_called_with_any_arguments()):
-    and_will_return(body_mock):
-    and_then(love_mock.physics.newCircleShape:should_be_called_with_any_arguments()):
-    and_then(body_mock.applyForce:should_be_called_with(body_mock, 3000 * math.sin(math.pi / 4), 3000 * math.cos(math.pi / 4))):
-    when(function()
-      Projectile(love_mock, world, '', origin, { x = 3, y = 4 })
-    end)
+    given_the_projectile_is_initialized_with('some name', bot2, a_position)
+    assert.are.same({ 'projectile', 'team2' }, projectile.mask)
   end)
 
   it('should destroy itself when it collides with a bot from team 1', function()
-    local projectile = Projectile(love, world, 'some name', bot1, { x = 0, y = 0})
+    given_the_projectile_is_initialized_with('some name', bot2, a_position)
     projectile.data.collision_callback({ category = 'team1' })
-    assert.are.same(true, projectile.data.is_marked_for_deletion())
+    it_should_be(DEAD)
   end)
 
   it('should destroy itself when it collides with a bot from team 2', function()
-    local projectile = Projectile(love, world, 'some name', bot1, { x = 0, y = 0})
+    given_the_projectile_is_initialized_with('some name', bot1, a_position)
     projectile.data.collision_callback({ category = 'team2' })
-    assert.are.same(true, projectile.data.is_marked_for_deletion())
+    it_should_be(DEAD)
   end)
 
   it('should destroy itself when it collides with a wall', function()
-    local projectile = Projectile(love, world, 'some name', bot1, { x = 0, y = 0})
+    given_the_projectile_is_initialized_with('some name', bot1, a_position)
     projectile.data.collision_callback({ category = 'environment' })
-    assert.are.same(true, projectile.data.is_marked_for_deletion())
+    it_should_be(DEAD)
   end)
 end)
