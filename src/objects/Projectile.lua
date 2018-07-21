@@ -1,10 +1,12 @@
 local categories = require('src/objects/categories')
+local bit = require('bit')
 
 local function calculate_unit_vector(x1, y1, x2, y2)
   local angle = math.atan2(x2 - x1, y2 - y1)
   return { x = math.sin(angle), y = math.cos(angle) }
 end
 
+local prev_time = 0
 local function calculate_initial_location_and_force(origin, target)
     local x_origin
     local y_origin
@@ -33,20 +35,19 @@ end
 return function(love, world, name, origin, target)
   local marked_for_deletion = false
   local initial_physics = calculate_initial_location_and_force(origin, target)
-
   local projectile = {
     body = love.physics.newBody(
       world, initial_physics.location.x, initial_physics.location.y, 'dynamic'),
     shape = love.physics.newCircleShape(3),
     restitution = 0.4,
     mass = 5,
-    mask = origin.data.category,
+    mask = {'projectile', origin.data.category},
     data = {
       name = name,
       graphicsType = 'circle',
-      category = categories.projectile,
+      category = 'projectile',
       collision_callback = function(o)
-        if o.category ~= categories.projectile then
+        if o.category ~= 'projectile' then
           marked_for_deletion = true
         end
       end,

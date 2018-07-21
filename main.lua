@@ -1,6 +1,7 @@
 local Bot = require 'src/objects/Bot'
 local Edge = require 'src/objects/Edge'
 local Projectile = require 'src/objects/Projectile'
+local categories = require 'src/objects/categories'
 
 local world
 local objects = {}
@@ -21,11 +22,19 @@ function on_collision(a, b, coll)
     if b_data.collision_callback then b_data.collision_callback(a_data) end
 end
 
+function create_mask(object)
+  local mask = 0
+  for _, category in ipairs(object.mask) do
+    mask = bit.bor(mask, categories[category])
+  end
+  object.fixture:setMask(mask)
+end
+
 function add_object(object)
   object.fixture = love.physics.newFixture(object.body, object.shape)
-  object.fixture:setCategory(object.data.category)
+  object.fixture:setCategory(categories[object.data.category])
   if object.restitution then object.fixture:setRestitution(object.restitution) end
-  if object.mask then object.fixture:setMask(object.mask) end
+  if object.mask then create_mask(object) end
   object.fixture:setUserData(object.data)
   table.insert(objects, object)
 end
@@ -35,10 +44,14 @@ function love.load()
   world:setCallbacks(on_collision)
   bot1 = Bot(love, world, 'Bot 1', 400, 200, 'team1')
   bot2 = Bot(love, world, 'Bot 2', 200, 200, 'team2')
+  bot3 = Bot(love, world, 'Bot 3', 400, 400, 'team1')
+  bot4 = Bot(love, world, 'Bot 4', 200, 400, 'team2')
 
   initialObjects = {
     bot1,
     bot2,
+    bot3,
+    bot4,
     Edge(love, world, 'Top edge', 0, 0, width, 0),
     Edge(love, world, 'Bottom edge', 0, 0, 0, height),
     Edge(love, world, 'Left edge', width, height, width, 0),
@@ -68,7 +81,7 @@ function love.update(dt)
       objects[1].body:applyForce(0, force)
   end
     add_object(Projectile(love, world, 'projectile', bot1, bot2))
-      add_object(Projectile(love, world, 'projectile', bot2, bot1))
+    add_object(Projectile(love, world, 'projectile', bot2, bot1))
 end
 
 local function CreateProjectile()

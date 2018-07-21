@@ -1,5 +1,3 @@
-local categories = require('src/objects/categories')
-
 return function(love, world, name, x, y, team)
   local radius = 50
   local mass = 5
@@ -13,7 +11,7 @@ return function(love, world, name, x, y, team)
     data = {
       name = name,
       graphicsType = 'circle',
-      category = categories[team],
+      category = team,
       is_marked_for_deletion = function() return false end
     }
   }
