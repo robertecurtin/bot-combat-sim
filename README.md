@@ -1,7 +1,18 @@
 # bot-combat-sim
 
+This is a framework for pitting AIs against each other in squad combat.
+AIs are given knowledge of their bot's position, their opponents' / teammates' position, and the change in time since last update
+
+
 ### Example
 ![bot combat](misc/2v2.gif)
+
+### Todo
+Give AIs visibility to projectiles so they can dodge
+Limit firing rate of bots, and expose remaining time to each AI
+Add ability for AIs to choose starting stats (speed / firing rate / damage) within limits
+Add special projectile abilities (damage over time, heal allies, slow target, etc)
+Consider opening issues for these instead of having a todo list
 
 ### How to run
 Install [LOVE](https://love2d.org/) and call it from the root directory
