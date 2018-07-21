@@ -65,7 +65,7 @@ end
 
 local projectile_timer = 0
 
-local function CreateProjectile(source, target)
+local function create_projectile(source, target)
   add_object(Projectile(love, world, 'projectile', source, target))
 end
 
@@ -89,15 +89,14 @@ function love.update(dt)
     bots[1].body:applyForce(force * bot1_move.force.x, force * bot1_move.force.y)
     bots[2].body:applyForce(force * bot2_move.force.x, force * bot2_move.force.y)
 
-    if bot1_move.fire then CreateProjectile(bots[1], bot1_move.target) end
-    if bot2_move.fire then CreateProjectile(bots[2], bot2_move.target) end
+    if bot1_move.fire then create_projectile(bots[1], bot1_move.target) end
+    if bot2_move.fire then create_projectile(bots[2], bot2_move.target) end
   end
 end
 
 
 function love.keypressed(key)
   if key == 'x' then love.event.quit() end
-  if key == 'r' then CreateProjectile() end
 end
 
 local function remove_dead_objects()
