@@ -17,7 +17,16 @@ return function(love, world, name, x, y, team, health)
           if bot.data.health <= 0 then alive = false end
         end
       end,
-      is_alive = function() return alive end
+      is_alive = function() return alive end,
+      get_position = function()
+        local x
+        local y
+        x, y = bot.body:getPosition()
+        print('Getting position')
+        print(x)
+        print(y)
+        return { x = x, y = y }
+      end
     }
   }
   return bot

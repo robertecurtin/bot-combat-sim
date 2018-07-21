@@ -40,6 +40,7 @@ function add_object(object)
 end
 
 function love.load()
+  print('Loading')
   world = love.physics.newWorld(0, 0, true)
   world:setCallbacks(on_collision)
   bots = {
@@ -70,27 +71,14 @@ local function create_projectile(source, target)
 end
 
 function love.update(dt)
+  print('Updating')
   world:update(dt)
   local force = 300
-  if(bots[1].data.is_alive() and bots[2].data.is_alive()) then
-    bot1_x, bot1_y = bots[1].body:getPosition()
-    bot2_x, bot2_y = bots[2].body:getPosition()
+  for i, bot in ipairs(bots) do
+    local bot_move = ai.bot1(bots, i, dt)
 
-    local bot1_move = ai.bot1(
-      { x = bot1_x, y = bot1_y },
-      { x = bot2_x, y = bot2_y },
-      dt)
-
-    local bot2_move = ai.bot2(
-      { x = bot2_x, y = bot2_y },
-      { x = bot1_x, y = bot1_y },
-      dt)
-
-    bots[1].body:applyForce(force * bot1_move.force.x, force * bot1_move.force.y)
-    bots[2].body:applyForce(force * bot2_move.force.x, force * bot2_move.force.y)
-
-    if bot1_move.fire then create_projectile(bots[1], bot1_move.target) end
-    if bot2_move.fire then create_projectile(bots[2], bot2_move.target) end
+    bot.body:applyForce(force * bot_move.force.x, force * bot_move.force.y)
+    if bot_move.fire then create_projectile(bot, bot_move.target) end
   end
 end
 
@@ -114,6 +102,7 @@ local function draw_circle(object)
 end
 
 function love.draw()
+  print('Drawing')
   remove_dead_objects()
   for _, object in pairs(objects) do
     if(object.data.graphicsType == 'circle') then

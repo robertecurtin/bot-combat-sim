@@ -2,9 +2,10 @@ local Bot = require('objects/Bot')
 local mach = require('mach')
 
 describe('Bot', function()
+  local bot
   local world = {}
 
-  local bot
+  local body = { getPosition = mach.mock_function('GetPosition') }
   local love = {
     physics = {
       newBody = mach.mock_function('newBody'),
@@ -18,6 +19,7 @@ describe('Bot', function()
   local function given_the_bot_is_initialized_with(c)
     love.physics.newBody:
       should_be_called_with(world, c.x, c.y, 'dynamic'):
+      and_will_return(body):
       and_also(love.physics.newCircleShape:should_be_called_with_any_arguments()):
       when(function()
         bot = Bot(love, world, c.name, c.x, c.y, c.team, c.health)
@@ -42,6 +44,10 @@ describe('Bot', function()
 
   local function its_health_should_be(expected)
     assert.are.same(expected, bot.data.health)
+  end
+
+  local function its_position_should_be(expected)
+    assert.are.same(expected, bot.data.get_position())
   end
 
   local function it_should_have_a_restitution_value()
@@ -138,5 +144,20 @@ describe('Bot', function()
     it_should_be(ALIVE)
     when_it_collides_with_an_object_with_category('projectile')
     it_should_be(DEAD)
+  end)
+
+  it('should provide access to its current position', function()
+    given_the_bot_is_initialized_with({
+      name = '',
+      x = 3,
+      y = 4,
+      team = 'team2',
+      health = 2
+    })
+    body.getPosition:should_be_called_with(body):
+    and_will_return(3, 4):
+    when(function()
+      its_position_should_be({ x = 3, y = 4 })
+    end)
   end)
 end)
