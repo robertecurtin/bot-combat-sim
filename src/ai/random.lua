@@ -22,6 +22,7 @@ return {
         x = math.random(-1, 1),
         y = math.random(-1, 1)
       },
+      target = target
     }
   end
 }
