@@ -1,4 +1,4 @@
-random_bot = require 'src/ai/random'
+random_bot = require 'src/ai/Random'
 
 return {
   random_bot,
