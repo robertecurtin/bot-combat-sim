@@ -74,6 +74,8 @@ describe('Projectile', function()
     assert.are.equal(alive, projectile.data.is_alive())
   end
 
+  local function nothing_should_happen() end
+
   local a_position = { x = 3, y = 4 }
 
   it('should initialize love objects', function()
@@ -95,7 +97,7 @@ describe('Projectile', function()
     given_the_projectile_is_initialized_with('some name', bot1, a_position)
     its_name_should_be('some name')
     its_graphics_type_should_be('circle')
-    its_category_should_be('projectile')
+    its_category_should_be('Projectile')
     it_should_have_a_restitution_value()
     it_should_have_a_mass()
     it_should_be(ALIVE)
@@ -103,10 +105,10 @@ describe('Projectile', function()
 
   it('should not collide with other projectiles or the originating bots team', function()
     given_the_projectile_is_initialized_with('some name', bot1, a_position)
-    its_mask_should_be({ 'projectile', 'Team 1' })
+    its_mask_should_be({ 'Projectile', 'Team 1' })
 
     given_the_projectile_is_initialized_with('some name', bot2, a_position)
-    its_mask_should_be({ 'projectile', 'Team 2' })
+    its_mask_should_be({ 'Projectile', 'Team 2' })
   end)
 
   it('should destroy itself when it collides with a bot from team 1', function()
@@ -123,7 +125,7 @@ describe('Projectile', function()
 
   it('should destroy itself when it collides with a wall', function()
     given_the_projectile_is_initialized_with('some name', bot1, a_position)
-    when_it_collides_with_an_object_with_category('environment')
+    when_it_collides_with_an_object_with_category('Environment')
     it_should_be(DEAD)
   end)
 
@@ -143,5 +145,12 @@ describe('Projectile', function()
       when(function()
         when_it_collides_with(bot2.data)
       end)
+  end)
+
+  it('should not trigger an effect on a wall upon collision', function()
+    local trigger_effect = mach.mock_function('trigger_effect')
+    given_the_projectile_is_initialized_with('some name', bot1, a_position, trigger_effect)
+    nothing_should_happen()
+    when_it_collides_with_an_object_with_category('Environment')
   end)
 end)

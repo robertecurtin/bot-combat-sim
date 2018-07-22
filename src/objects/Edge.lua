@@ -4,7 +4,7 @@ return function(love, world, name, x1, y1, x2, y2)
     shape = love.physics.newEdgeShape(x1, y1, x2, y2),
     data = {
       name = name,
-      category = 'environment',
+      category = 'Environment',
       is_alive = function() return true end
     }
   }

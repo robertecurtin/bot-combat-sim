@@ -84,7 +84,7 @@ end
 
 local function create_projectile(source, target, effect)
   local effect = effect_map[effect.effect_name](effect.power, bots)
-  add_object(Projectile(love, world, objects, 'projectile', source, target, effect))
+  add_object(Projectile(love, world, objects, 'Projectile', source, target, effect))
 end
 
 local function check_for_winner()

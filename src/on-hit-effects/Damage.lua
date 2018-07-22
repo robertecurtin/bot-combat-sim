@@ -1,6 +1,6 @@
-return function(damage)
+return function(damage, objects, category)
   return function(o)
-    if o.category == 'Team 1' or o.category == 'Team 2' then
+    if o.category ~= category then
       o.set_health(o.get_health() - damage)
       print('Dealing ' .. damage .. ' takes ' .. o.name ..
       ' down to ' .. o.get_health() .. ' health')

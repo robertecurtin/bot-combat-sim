@@ -35,15 +35,17 @@ return function(love, world, objects, name, origin, target, trigger_effect)
     shape = love.physics.newCircleShape(3),
     restitution = 0.4,
     mass = 5,
-    mask = {'projectile', origin.data.category},
+    mask = {'Projectile', origin.data.category},
     data = {
       name = name,
       graphicsType = 'circle',
-      category = 'projectile',
+      category = 'Projectile',
       collision_callback = function(o)
-        if o.category ~= 'projectile' then
+        if o.category ~= 'Projectile' then
           alive = false
-          trigger_effect(o, objects, origin.data.category)
+          if o.category ~= 'Environment' then
+            trigger_effect(o, objects, origin.data.category)
+          end
         end
       end,
       is_alive = function() return alive end

@@ -57,11 +57,11 @@ describe('Bot', function()
   it('should initialize using the provided default values', function()
     given_the_bot_is_initialized_with({
       name = 'some name',
-      team = 'team1',
+      team = 'Team 1',
       health = 1
     })
     its_name_should_be('some name')
-    its_category_should_be('team1')
+    its_category_should_be('Team 1')
     its_graphics_type_should_be('circle')
     it_should_have_a_restitution_value()
     it_should_have_a_mass()
@@ -71,17 +71,17 @@ describe('Bot', function()
   it('should initialize different default values', function()
     given_the_bot_is_initialized_with({
       name = 'another name',
-      team = 'team2',
+      team = 'Team 2',
       health = 5
     })
     its_name_should_be('another name')
-    its_category_should_be('team2')
+    its_category_should_be('Team 2')
   end)
 
   it('should update its health when it is set', function()
     given_the_bot_is_initialized_with({
       name = 'another name',
-      team = 'team2',
+      team = 'Team 2',
       health = 5
     })
     when_its_health_is_set_to(5)
@@ -91,7 +91,7 @@ describe('Bot', function()
   it('should die when it loses all its health', function()
     given_the_bot_is_initialized_with({
       name = '',
-      team = 'team2',
+      team = 'Team 2',
       health = 2
     })
     when_its_health_is_set_to(1)
@@ -103,7 +103,7 @@ describe('Bot', function()
   it('should provide access to its current position', function()
     given_the_bot_is_initialized_with({
       name = '',
-      team = 'team2',
+      team = 'Team 2',
       health = 2
     })
     body.getPosition:should_be_called_with(body):
