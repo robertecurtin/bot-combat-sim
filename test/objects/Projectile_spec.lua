@@ -26,14 +26,19 @@ describe('Projectile', function()
   local ALIVE = true
   local DEAD = not ALIVE
 
-  local function given_the_projectile_is_initialized_with(name, origin_bot, position)
+  local function given_the_projectile_is_initialized_with(name, origin_bot, position, trigger_effect)
+    if not trigger_effect then trigger_effect = function() end end
     love.physics.newBody:
       should_be_called_with(world, mach.any, mach.any, 'dynamic'):
       and_will_return(body):
       and_also(love.physics.newCircleShape:should_be_called_with_any_arguments()):
       when(function()
-        projectile = Projectile(love, world, name, origin_bot, position)
+        projectile = Projectile(love, world, name, origin_bot, position, trigger_effect)
       end)
+  end
+
+  local function when_it_collides_with(object)
+    projectile.data.collision_callback(object)
   end
 
   local function when_it_collides_with_an_object_with_category(category)
@@ -119,5 +124,14 @@ describe('Projectile', function()
     given_the_projectile_is_initialized_with('some name', bot1, a_position)
     when_it_collides_with_an_object_with_category('environment')
     it_should_be(DEAD)
+  end)
+
+  it('should trigger an effect on the bot upon collision', function()
+    local trigger_effect = mach.mock_function('trigger_effect')
+    given_the_projectile_is_initialized_with('some name', bot1, a_position, trigger_effect)
+    trigger_effect:should_be_called_with(bot1.data):
+      when(function()
+        when_it_collides_with(bot1.data)
+      end)
   end)
 end)

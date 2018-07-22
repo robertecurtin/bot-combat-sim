@@ -75,8 +75,13 @@ function love.load()
   love.window.setMode(width, height)
 end
 
+local function do_damage(o)
+  if o.set_health then
+    o.set_health(o.get_health() - 1)
+  end
+end
 local function create_projectile(source, target)
-  add_object(Projectile(love, world, 'projectile', source, target))
+  add_object(Projectile(love, world, 'projectile', source, target, do_damage))
 end
 
 local function check_for_winner()
@@ -96,6 +101,7 @@ function love.update(dt)
   local force = 300
   local winner = check_for_winner()
   local bot_moves = ai_manager.update(dt)
+
   for i, move in ipairs(bot_moves) do
     if bots[i].data.is_alive() then
       bots[i].body:applyForce(force * move.force.x, force * move.force.y)

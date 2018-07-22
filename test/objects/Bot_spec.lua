@@ -35,7 +35,7 @@ describe('Bot', function()
   end
 
   local function its_health_should_be(expected)
-    assert.are.same(expected, bot.data.health)
+    assert.are.same(expected, bot.data.get_health())
   end
 
   local function its_position_should_be(expected)
@@ -88,49 +88,15 @@ describe('Bot', function()
     its_health_should_be(5)
   end)
 
-  it('should take damage when it collides with a projectile', function()
-    given_the_bot_is_initialized_with({
-      name = '',
-      team = 'team2'
-    })
-    when_its_health_is_set_to(5)
-    when_it_collides_with_an_object_with_category('projectile')
-    its_health_should_be(4)
-    when_it_collides_with_an_object_with_category('projectile')
-    its_health_should_be(3)
-  end)
-
-  it('should not take damage when it collides with another bot', function()
-    given_the_bot_is_initialized_with({
-      name = '',
-      team = 'team2'
-    })
-    when_its_health_is_set_to(5)
-    when_it_collides_with_an_object_with_category('team1')
-    its_health_should_be(5)
-    when_it_collides_with_an_object_with_category('team2')
-    its_health_should_be(5)
-  end)
-
-  it('should not take damage when it collides with a wall', function()
-    given_the_bot_is_initialized_with({
-      name = '',
-      team = 'team2',
-    })
-    when_its_health_is_set_to(5)
-    when_it_collides_with_an_object_with_category('environment')
-    its_health_should_be(5)
-  end)
-
   it('should die when it loses all its health', function()
     given_the_bot_is_initialized_with({
       name = '',
       team = 'team2',
       health = 2
     })
-    when_it_collides_with_an_object_with_category('projectile')
+    when_its_health_is_set_to(1)
     it_should_be(ALIVE)
-    when_it_collides_with_an_object_with_category('projectile')
+    when_its_health_is_set_to(0)
     it_should_be(DEAD)
   end)
 

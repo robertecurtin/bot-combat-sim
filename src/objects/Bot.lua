@@ -11,14 +11,12 @@ return function(body, shape, name, team, health)
       health = health,
       graphicsType = 'circle',
       category = team,
-      collision_callback = function(o)
-        if o.category == 'projectile' then
-          bot.data.health = bot.data.health - 1
-          if bot.data.health <= 0 then alive = false end
-        end
-      end,
       is_alive = function() return alive end,
-      set_health = function(health) bot.data.health = health end,
+      set_health = function(health)
+        bot.data.health = health
+        if bot.data.health <= 0 then alive = false end
+      end,
+      get_health = function() return bot.data.health end,
       get_position = function()
         local x
         local y

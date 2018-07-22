@@ -26,7 +26,7 @@ local function calculate_initial_location_and_force(origin, target)
   }
 end
 
-return function(love, world, name, origin, target)
+return function(love, world, name, origin, target, trigger_effect)
   local alive = true
   local initial_physics = calculate_initial_location_and_force(origin, target)
   local projectile = {
@@ -43,6 +43,7 @@ return function(love, world, name, origin, target)
       collision_callback = function(o)
         if o.category ~= 'projectile' then
           alive = false
+          trigger_effect(o)
         end
       end,
       is_alive = function() return alive end
