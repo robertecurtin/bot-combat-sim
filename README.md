@@ -1,6 +1,7 @@
 # bot-combat-sim
 
 This is a framework for pitting AIs against each other in squad combat.
+
 AIs are given knowledge of their bot's position, their opponents' / teammates' position, and the change in time since last update
 
 
