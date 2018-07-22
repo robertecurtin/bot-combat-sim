@@ -91,10 +91,8 @@ describe('AiManager', function()
       and_will_return({ force = { x = -30, y = 0 } }):
       when(function()
         local moves = ai_manager.update(dt)
-        assert.are.same({
-          { force = vector_to_unit_vector({ x = 400, y = 400 }) },
-          { force = vector_to_unit_vector({ x = -30, y = 0 }) }
-        }, moves)
+        assert.are.same(vector_to_unit_vector({ x = 400, y = 400 }), moves[1].force)
+        assert.are.same(vector_to_unit_vector({ x = -30, y = 0 }), moves[2].force)
       end)
   end)
 

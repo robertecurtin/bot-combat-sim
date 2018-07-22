@@ -4,6 +4,7 @@ local Projectile = require 'objects/Projectile'
 
 describe('Projectile', function()
   local projectile
+  local objects = {}
   local love = {
     physics = {
       newBody = mach.mock_function('newBody'),
@@ -13,12 +14,12 @@ describe('Projectile', function()
 
   local bot1 = {
     body = { getPosition = function() return 1, 2 end },
-    data = { category = 'team1' }
+    data = { category = 'Team 1' }
   }
 
   local bot2 = {
     body = { getPosition = function() return 3, 4 end },
-    data = { category = 'team2' }
+    data = { category = 'Team 2' }
   }
 
   local body = { applyForce = function () end }
@@ -33,7 +34,7 @@ describe('Projectile', function()
       and_will_return(body):
       and_also(love.physics.newCircleShape:should_be_called_with_any_arguments()):
       when(function()
-        projectile = Projectile(love, world, name, origin_bot, position, trigger_effect)
+        projectile = Projectile(love, world, objects, name, origin_bot, position, trigger_effect)
       end)
   end
 
@@ -86,7 +87,7 @@ describe('Projectile', function()
       and_also(love.physics.newCircleShape:should_be_called_with_any_arguments()):
       and_will_return(shape):
       when(function()
-        Projectile(love, world, '', bot1, { x = 3, y = 4 })
+        Projectile(love, world, {}, '', bot1, { x = 3, y = 4 })
       end)
   end)
 
@@ -102,21 +103,21 @@ describe('Projectile', function()
 
   it('should not collide with other projectiles or the originating bots team', function()
     given_the_projectile_is_initialized_with('some name', bot1, a_position)
-    its_mask_should_be({ 'projectile', 'team1' })
+    its_mask_should_be({ 'projectile', 'Team 1' })
 
     given_the_projectile_is_initialized_with('some name', bot2, a_position)
-    its_mask_should_be({ 'projectile', 'team2' })
+    its_mask_should_be({ 'projectile', 'Team 2' })
   end)
 
   it('should destroy itself when it collides with a bot from team 1', function()
     given_the_projectile_is_initialized_with('some name', bot2, a_position)
-    when_it_collides_with_an_object_with_category('team1')
+    when_it_collides_with_an_object_with_category('Team 1')
     it_should_be(DEAD)
   end)
 
   it('should destroy itself when it collides with a bot from team 2', function()
     given_the_projectile_is_initialized_with('some name', bot1, a_position)
-    when_it_collides_with_an_object_with_category('team2')
+    when_it_collides_with_an_object_with_category('Team 2')
     it_should_be(DEAD)
   end)
 
@@ -129,9 +130,18 @@ describe('Projectile', function()
   it('should trigger an effect on the bot upon collision', function()
     local trigger_effect = mach.mock_function('trigger_effect')
     given_the_projectile_is_initialized_with('some name', bot1, a_position, trigger_effect)
-    trigger_effect:should_be_called_with(bot1.data):
+    trigger_effect:should_be_called_with(bot1.data, objects, 'Team 1'):
       when(function()
         when_it_collides_with(bot1.data)
+      end)
+  end)
+
+  it('should trigger an effect on the proper team upon collision', function()
+    local trigger_effect = mach.mock_function('trigger_effect')
+    given_the_projectile_is_initialized_with('some name', bot2, a_position, trigger_effect)
+    trigger_effect:should_be_called_with(bot2.data, objects, 'Team 2'):
+      when(function()
+        when_it_collides_with(bot2.data)
       end)
   end)
 end)
