@@ -1,6 +1,6 @@
 local mach = require 'mach'
 
-local Projectile = require('objects/Projectile')
+local Projectile = require 'objects/Projectile'
 
 describe('Projectile', function()
   local projectile

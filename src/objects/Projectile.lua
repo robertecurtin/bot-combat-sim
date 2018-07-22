@@ -1,33 +1,29 @@
 local categories = require 'src/objects/categories'
-
-local function calculate_unit_vector(x1, y1, x2, y2)
-  local angle = math.atan2(x2 - x1, y2 - y1)
-  return { x = math.sin(angle), y = math.cos(angle) }
-end
+local points_to_unit_vector = require 'src/math/points_to_unit_vector'
 
 local function calculate_initial_location_and_force(origin, target)
-    local x_origin
-    local y_origin
-    local x_target
-    local y_target
-    local speed = 3000
-    local distance = 30
+  local x_origin
+  local y_origin
+  local x_target
+  local y_target
+  local speed = 3000
+  local distance = 30
 
-    x_origin, y_origin = origin.body:getPosition()
-    x_target, y_target = target.x, target.y
-    unit_vector = calculate_unit_vector(
-      x_origin, y_origin, x_target, y_target)
+  x_origin, y_origin = origin.body:getPosition()
+  x_target, y_target = target.x, target.y
+  unit_vector = points_to_unit_vector(
+    x_origin, y_origin, x_target, y_target)
 
-    return {
-      force = {
-        x = speed * unit_vector.x,
-        y = speed * unit_vector.y
-      },
-      location = {
-        x = x_origin + (distance * unit_vector.x),
-        y = y_origin + (distance * unit_vector.y)
-      }
+  return {
+    force = {
+      x = speed * unit_vector.x,
+      y = speed * unit_vector.y
+    },
+    location = {
+      x = x_origin + (distance * unit_vector.x),
+      y = y_origin + (distance * unit_vector.y)
     }
+  }
 end
 
 return function(love, world, name, origin, target)
