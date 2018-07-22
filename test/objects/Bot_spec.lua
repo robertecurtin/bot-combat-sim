@@ -18,6 +18,10 @@ describe('Bot', function()
     bot.data.collision_callback({ category = category })
   end
 
+  local function when_its_health_is_set_to(health)
+    bot.data.set_health(health)
+  end
+
   local function its_name_should_be(expected)
     assert.are.same(expected, bot.data.name)
   end
@@ -73,6 +77,16 @@ describe('Bot', function()
     })
     its_name_should_be('another name')
     its_category_should_be('team2')
+    its_health_should_be(5)
+  end)
+
+  it('should update its health when it is set', function()
+    given_the_bot_is_initialized_with({
+      name = 'another name',
+      team = 'team2',
+      health = 5
+    })
+    when_its_health_is_set_to(5)
     its_health_should_be(5)
   end)
 

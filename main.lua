@@ -60,6 +60,8 @@ function love.load()
 
   ai_manager = AiManager(bots, ai_config)
 
+  for i, bot in ipairs(bots) do bot.data.set_health(ai_manager.get_health(i)) end
+
   initialObjects = {
     Edge(love, world, 'Top edge', 0, 0, width, 0),
     Edge(love, world, 'Bottom edge', 0, 0, 0, height),

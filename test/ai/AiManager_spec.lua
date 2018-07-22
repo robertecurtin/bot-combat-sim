@@ -52,7 +52,7 @@ describe('AiManager', function()
   end
 
   local function this_bots_health_should_be(i, health)
-    assert.are.same(health, ai_manager.stats[i].health)
+    assert.are.same(health, ai_manager.get_health(i))
   end
 
   it('should call each ai upon update and return their moves', function()
@@ -110,6 +110,8 @@ describe('AiManager', function()
       update = update
     }
     end
+    given_the_ai_manager_is_initialized_with_this_ai(ai)
+    this_bots_health_should_be(1, 3)
   end)
 
   it('should vary firing rate based on the ai firing rate stat', function()

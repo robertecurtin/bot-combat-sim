@@ -18,6 +18,7 @@ return function(body, shape, name, team, health)
         end
       end,
       is_alive = function() return alive end,
+      set_health = function(health) bot.data.health = health end,
       get_position = function()
         local x
         local y

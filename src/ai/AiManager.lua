@@ -23,6 +23,6 @@ return function (bots, config)
       end
       return moves
     end,
-    stats = stats
+    get_health = function(i) return stats[i].health end
   }
 end

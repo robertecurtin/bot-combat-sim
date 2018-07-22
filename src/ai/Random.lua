@@ -1,6 +1,7 @@
 return function()
   return {
-    speed = 1,
+    speed = math.random(1,10),
+    health = 10*math.random(1,3),
     update = function (bots, my_index, dt)
       local my_team_name = bots[my_index].data.category
       local enemies = {}
