@@ -48,6 +48,7 @@ local function new_bot_shape() return love.physics.newCircleShape(10) end
 function love.load()
   world = love.physics.newWorld(0, 0, true)
   world:setCallbacks(on_collision)
+
   bots = {
     Bot(new_bot_body_at(400, 200), new_bot_shape(), 'Bot 1', 'Team 1', 50),
     Bot(new_bot_body_at(400, 400), new_bot_shape(), 'Bot 2', 'Team 1', 50),
@@ -61,11 +62,9 @@ function love.load()
     Edge(love, world, 'Left edge', width, height, width, 0),
     Edge(love, world, 'Right edge', width, height, 0, height)
   }
-  for _, bot in ipairs(bots) do table.insert(initialObjects, bot) end
 
-  for _, object in pairs(initialObjects) do
-    add_object(object)
-  end
+  for _, bot in ipairs(bots) do table.insert(initialObjects, bot) end
+  for _, object in pairs(initialObjects) do add_object(object) end
 
   love.window.setMode(width, height)
 end
