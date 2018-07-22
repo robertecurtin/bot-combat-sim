@@ -1,17 +1,11 @@
-local Bot = require('objects/Bot')
-local mach = require('mach')
+local Bot = require 'objects/Bot'
+local mach = require 'mach'
 
 describe('Bot', function()
   local bot
   local world = {}
 
   local body = { getPosition = mach.mock_function('GetPosition') }
-  local love = {
-    physics = {
-      newBody = mach.mock_function('newBody'),
-      newCircleShape = mach.mock_function('newCircleShape'),
-    }
-  }
 
   local ALIVE = true
   local DEAD = false

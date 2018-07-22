@@ -1,4 +1,4 @@
-local mach = require('mach')
+local mach = require 'mach'
 
 local Projectile = require('objects/Projectile')
 

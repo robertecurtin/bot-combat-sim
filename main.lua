@@ -69,8 +69,6 @@ function love.load()
   love.window.setMode(width, height)
 end
 
-local projectile_timer = 0
-
 local function create_projectile(source, target)
   add_object(Projectile(love, world, 'projectile', source, target))
 end
