@@ -5,6 +5,7 @@ local categories = require 'src/objects/categories'
 local colors = require 'src/objects/colors'
 local AiManager = require 'src/ai/AiManager'
 local ai_config = require 'src/ai/config'
+local effect_map = require 'src/on-hit-effects/effect_map'
 
 local world
 local objects = {}
@@ -80,8 +81,10 @@ local function do_damage(o)
     o.set_health(o.get_health() - 1)
   end
 end
-local function create_projectile(source, target)
-  add_object(Projectile(love, world, 'projectile', source, target, do_damage))
+
+local function create_projectile(source, target, effect)
+  local effect = effect_map[effect.effect_name](effect.power)
+  add_object(Projectile(love, world, 'projectile', source, target, effect))
 end
 
 local function check_for_winner()
@@ -105,7 +108,7 @@ function love.update(dt)
   for i, move in ipairs(bot_moves) do
     if bots[i].data.is_alive() then
       bots[i].body:applyForce(force * move.force.x, force * move.force.y)
-      if move.target then create_projectile(bots[i], move.target) end
+      if move.target then create_projectile(bots[i], move.target, move.effect) end
     end
   end
   love.graphics.setColor(1, 1, 0, 1)

@@ -3,6 +3,8 @@ return function()
     speed = math.random(1,5),
     health = 15 + 3*math.random(1,5),
     firing_rate = math.random(1,5),
+    effect_name = 'damage',
+    effect_power = math.random(1,5),
     update = function (bots, my_index, dt)
       local my_team_name = bots[my_index].data.category
       local enemies = {}
