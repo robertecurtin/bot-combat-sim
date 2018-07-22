@@ -3,15 +3,14 @@ local Edge = require 'src/objects/Edge'
 local Projectile = require 'src/objects/Projectile'
 local categories = require 'src/objects/categories'
 local colors = require 'src/objects/colors'
-local ai = require 'src/ai/config'
+local AiManager = require 'src/ai/AiManager'
+local ai_config = require 'src/ai/config'
 
 local world
 local objects = {}
 
-local width = 800
-local height = 800
-
 local bots
+local ai_manager
 
 local function on_collision(a, b, coll)
   x,y = coll:getNormal()
@@ -56,6 +55,11 @@ function love.load()
     Bot(new_bot_body_at(200, 400), new_bot_shape(), 'Bot 4', 'Team 2', 50)
   }
 
+  ai_manager = AiManager(bots, ai_config)
+
+  local width = 800
+  local height = 800
+
   initialObjects = {
     Edge(love, world, 'Top edge', 0, 0, width, 0),
     Edge(love, world, 'Bottom edge', 0, 0, 0, height),
@@ -76,7 +80,7 @@ end
 local function check_for_winner()
   local live_teams = {}
   for _, bot in ipairs(bots) do
-    live_teams[bot.data.category] = true
+    if bot.data.is_alive() then live_teams[bot.data.category] = true end
   end
 
   if not live_teams['Team 1'] and not live_teams['Team 2'] then return 'No one' end
@@ -90,10 +94,12 @@ function love.update(dt)
   local force = 300
   local winner = check_for_winner()
   if not winner then
-    for i, bot in ipairs(bots) do
-      local bot_move = ai[i](bots, i, dt)
-      bot.body:applyForce(force * bot_move.force.x, force * bot_move.force.y)
-      if bot_move.fire then create_projectile(bot, bot_move.target) end
+    local bot_moves = ai_manager.update(bots, i, dt)
+    for i, move in ipairs(bot_moves) do
+      if bots[i].data.is_alive() then
+        bots[i].body:applyForce(force * move.force.x, force * move.force.y)
+        if move.fire then create_projectile(bots[i], move.target) end
+      end
     end
   end
   love.graphics.setColor(1, 1, 0, 1)
@@ -108,12 +114,6 @@ local function remove_dead_objects()
     if(objects[i].data.is_alive() == false) then
       objects[i].body:destroy()
       table.remove(objects,i)
-    end
-  end
-
-  for i=#bots,1,-1 do
-    if(bots[i].data.is_alive() == false) then
-      table.remove(bots,i)
     end
   end
 end
