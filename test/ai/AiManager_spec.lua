@@ -9,6 +9,7 @@ describe('AiManager', function()
   local ai1 = function()
     return {
       speed = 1,
+      firing_rate = 1,
       update = ai1_update
     }
   end
@@ -17,6 +18,7 @@ describe('AiManager', function()
   local ai2 = function()
     return {
       speed = 1,
+      firing_rate = 1,
       update = ai2_update
     }
   end
@@ -102,6 +104,7 @@ describe('AiManager', function()
       {
         speed = 2,
         health = 1,
+        firing_rate = 1,
         update = update
       }
     end
@@ -128,14 +131,39 @@ describe('AiManager', function()
     local ai = function() return {
       health = 3,
       speed = 1,
-      firing_rate = 3,
-      update = function() return a_move end
+      firing_rate = 1,
+      update = function() return
+        {
+          force = { x = 1, y = -1 },
+          target = { x = 3, y = -5 }
+        }
+      end
     }
-  end
+    end
     given_the_ai_manager_is_initialized_with_this_ai(ai)
     the_ai_should_fire_after(1)
     the_ai_should_not_fire_after(0.5)
-    end)
+    the_ai_should_fire_after(0.5)
+  end)
+
+  it('should vary firing rate based on the ai damage stat', function()
+    local ai = function() return {
+      health = 3,
+      speed = 1,
+      firing_rate = 5,
+      update = function() return
+        {
+          force = { x = 1, y = -1 },
+          target = { x = 3, y = -5 }
+        }
+      end
+    }
+    end
+    given_the_ai_manager_is_initialized_with_this_ai(ai)
+    the_ai_should_fire_after(1/5)
+    the_ai_should_not_fire_after(1/5 - 0.01)
+    the_ai_should_fire_after(0.01)
+  end)
 
   it('should vary damage based on the ai damage stat', function()
     end)

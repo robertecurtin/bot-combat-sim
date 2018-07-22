@@ -6,13 +6,13 @@ return function (bots, config)
   for i, Ai in ipairs(config) do
     local ai = Ai()
     table.insert(ais, ai)
-    table.insert(stats, { health = ai.health, last_fired = 0 })
+    table.insert(stats, { health = ai.health, last_fired = 0, firing_rate = ai.firing_rate })
   end
 
   local time = 0
 
   local function shot_is_valid(i)
-    local valid = time >= stats[i].last_fired + 1
+    local valid = time >= stats[i].last_fired + 1 / stats[i].firing_rate
     if valid then stats[i].last_fired = time end
     return valid
   end
