@@ -97,7 +97,7 @@ function love.update(dt)
   for i, move in ipairs(bot_moves) do
     if bots[i].data.is_alive() then
       bots[i].body:applyForce(force * move.force.x, force * move.force.y)
-      if move.fire then create_projectile(bots[i], move.target) end
+      if move.target then create_projectile(bots[i], move.target) end
     end
   end
   love.graphics.setColor(1, 1, 0, 1)

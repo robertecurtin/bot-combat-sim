@@ -1,5 +1,5 @@
 return {
-  init = function() end,
+  init = function() return { speed = 1 } end,
   update = function (bots, my_index, dt)
     local my_team_name = bots[my_index].data.category
     local enemies = {}
@@ -10,7 +10,6 @@ return {
     end
 
     local target
-    local fire = true
 
     if enemies[1] then
       target = enemies[math.random(1, #enemies)].data.get_position()
@@ -23,8 +22,6 @@ return {
         x = math.random(-1, 1),
         y = math.random(-1, 1)
       },
-      target = target,
-      fire = true
     }
   end
 }

@@ -9,10 +9,12 @@ describe('AiManager', function()
     init = mach.mock_function('ai1_init'),
     update = mach.mock_function('ai1_update')
   }
+
   local ai2 = {
     init = mach.mock_function('ai2_init'),
     update = mach.mock_function('ai2_update')
   }
+
   local stats1 = mach.mock_function('stats1')
   local stats2 = mach.mock_function('stats1')
 
@@ -32,17 +34,16 @@ describe('AiManager', function()
 
   local function given_the_ai_manager_is_initialized_with_two_bots()
     ai1.init:should_be_called():
+    and_will_return({ speed = 1 }):
     and_also(ai2.init:should_be_called()):
+    and_will_return({ speed = 1 }):
     when(function()
       ai_manager = AiManager(bots, { ai1, ai2 })
     end)
   end
 
-  local function given_the_ai_manager_is_initialized_with_one_bot()
-    ai1.init:should_be_called():
-    when(function()
-      ai_manager = AiManager(bots, { ai1 })
-    end)
+  local function given_the_ai_manager_is_initialized_with_this_ai(ai)
+    ai_manager = AiManager(bots, { ai })
   end
 
   local function an_update_occurs_after(dt)
@@ -76,10 +77,21 @@ describe('AiManager', function()
         { force = vector_to_unit_vector({ x = -30, y = 0 }) }
         }, moves)
     end)
-
   end)
 
   it('should vary speed based on the ai speed stat', function()
+    local ai = {
+      init = function() return { speed = 2 } end,
+      update = mach.mock_function('update')
+    }
+    given_the_ai_manager_is_initialized_with_this_ai(ai)
+
+    ai.update:should_be_called_with_any_arguments():
+    and_will_return({ force = { x = 1, y = 0 }}):
+    when(function()
+      local moves = ai_manager.update(dt)
+      assert.are.same({ x = 2, y = 0 }, moves[1].force)
+    end)
   end)
 
   it('should vary health based on the ai health stat', function()
