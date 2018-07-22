@@ -17,13 +17,7 @@ describe('Bot', function()
   local DEAD = false
 
   local function given_the_bot_is_initialized_with(c)
-    love.physics.newBody:
-      should_be_called_with(world, c.x, c.y, 'dynamic'):
-      and_will_return(body):
-      and_also(love.physics.newCircleShape:should_be_called_with_any_arguments()):
-      when(function()
-        bot = Bot(love, world, c.name, c.x, c.y, c.team, c.health)
-      end)
+    bot = Bot(body, {}, c.name, c.team, c.health)
   end
 
   local function when_it_collides_with_an_object_with_category(category)
@@ -65,8 +59,6 @@ describe('Bot', function()
   it('should initialize using the provided default values', function()
     given_the_bot_is_initialized_with({
       name = 'some name',
-      x = 3,
-      y = 4,
       team = 'team1',
       health = 1
     })
@@ -82,8 +74,6 @@ describe('Bot', function()
   it('should initialize different default values', function()
     given_the_bot_is_initialized_with({
       name = 'another name',
-      x = 3,
-      y = 4,
       team = 'team2',
       health = 5
     })
@@ -95,8 +85,6 @@ describe('Bot', function()
   it('should take damage when it collides with a projectile', function()
     given_the_bot_is_initialized_with({
       name = '',
-      x = 3,
-      y = 4,
       team = 'team2',
       health = 5
     })
@@ -109,8 +97,6 @@ describe('Bot', function()
   it('should not take damage when it collides with another bot', function()
     given_the_bot_is_initialized_with({
       name = '',
-      x = 3,
-      y = 4,
       team = 'team2',
       health = 5
     })
@@ -123,8 +109,6 @@ describe('Bot', function()
   it('should not take damage when it collides with a wall', function()
     given_the_bot_is_initialized_with({
       name = '',
-      x = 3,
-      y = 4,
       team = 'team2',
       health = 5
     })
@@ -135,8 +119,6 @@ describe('Bot', function()
   it('should die when it loses all its health', function()
     given_the_bot_is_initialized_with({
       name = '',
-      x = 3,
-      y = 4,
       team = 'team2',
       health = 2
     })
@@ -149,8 +131,6 @@ describe('Bot', function()
   it('should provide access to its current position', function()
     given_the_bot_is_initialized_with({
       name = '',
-      x = 3,
-      y = 4,
       team = 'team2',
       health = 2
     })

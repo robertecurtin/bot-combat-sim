@@ -1,9 +1,9 @@
-return function(love, world, name, x, y, team, health)
+return function(body, shape, name, team, health)
   local alive = true
   local bot
   bot = {
-    body = love.physics.newBody(world, x, y, 'dynamic'),
-    shape = love.physics.newCircleShape(10),
+    body = body,
+    shape = shape,
     restitution = 0.1,
     mass = 5,
     data = {

@@ -13,7 +13,7 @@ local height = 800
 
 local bots
 
-function on_collision(a, b, coll)
+local function on_collision(a, b, coll)
   x,y = coll:getNormal()
   local a_data = a:getUserData()
   local b_data = b:getUserData()
@@ -22,7 +22,7 @@ function on_collision(a, b, coll)
   if b_data.collision_callback then b_data.collision_callback(a_data) end
 end
 
-function create_mask(object)
+local function create_mask(object)
   local mask = 0
   for _, category in ipairs(object.mask) do
     mask = bit.bor(mask, categories[category])
@@ -30,7 +30,7 @@ function create_mask(object)
   object.fixture:setMask(mask)
 end
 
-function add_object(object)
+local function add_object(object)
   object.fixture = love.physics.newFixture(object.body, object.shape)
   object.fixture:setCategory(categories[object.data.category])
   if object.restitution then object.fixture:setRestitution(object.restitution) end
@@ -39,14 +39,20 @@ function add_object(object)
   table.insert(objects, object)
 end
 
+local function new_bot_body_at(x, y)
+  return love.physics.newBody(world, x, y, 'dynamic')
+end
+
+local function new_bot_shape() return love.physics.newCircleShape(10) end
+
 function love.load()
   world = love.physics.newWorld(0, 0, true)
   world:setCallbacks(on_collision)
   bots = {
-    Bot(love, world, 'Bot 1', 400, 200, 'Team 1', 50),
-    Bot(love, world, 'Bot 2', 400, 400, 'Team 1', 50),
-    Bot(love, world, 'Bot 3', 200, 200, 'Team 2', 50),
-    Bot(love, world, 'Bot 4', 200, 400, 'Team 2', 50)
+    Bot(new_bot_body_at(400, 200), new_bot_shape(), 'Bot 1', 'Team 1', 50),
+    Bot(new_bot_body_at(400, 400), new_bot_shape(), 'Bot 2', 'Team 1', 50),
+    Bot(new_bot_body_at(200, 200), new_bot_shape(), 'Bot 3', 'Team 2', 50),
+    Bot(new_bot_body_at(200, 400), new_bot_shape(), 'Bot 4', 'Team 2', 50)
   }
 
   initialObjects = {
