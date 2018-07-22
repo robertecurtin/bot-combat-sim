@@ -27,11 +27,17 @@ AIs must provide initial conditions (speed, health, firing rate) as well as a pr
 
 Every time the game state is updated, your AI will be called with the list of bots, your active bot's index in that list, and the change in time since the last update.
 
+Once your AI is created, place it in [config.lua](src/ai/config.lua) to try it out!
+
 ### Explanation of initial conditions
 Speed: Movement speed of your bots
+
 Health: Damage that your bots can take before they are destroyed
+
 Firing rate: Speed at which your bot can fire per second
+
 Effect: Type of effect that is applied when your bot's projectile hits a target
+
 Effect power: Strength of the effect
 
 ## Development / TDD Setup (Linux)
