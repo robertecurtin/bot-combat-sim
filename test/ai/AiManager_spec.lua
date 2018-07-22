@@ -55,8 +55,19 @@ describe('AiManager', function()
     assert.are.same(health, ai_manager.get_health(i))
   end
 
+  local function the_ai_should_fire_after(dt)
+    local moves = ai_manager.update(dt)
+    assert.are.are_not_equal(nil, moves[1].target)
+  end
+
+  local function the_ai_should_not_fire_after(dt)
+    local moves = ai_manager.update(dt)
+    assert.are.are_equal(nil, moves[1].target)
+  end
+
   it('should call each ai upon update and return their moves', function()
     given_the_ai_manager_is_initialized_with_two_bots()
+    local dt = 1
 
     ai1_update:should_be_called_with(bots, 1, dt):
       and_will_return(a_move):
@@ -70,6 +81,7 @@ describe('AiManager', function()
 
   it('should restrict force to a multiple of the unit vector', function()
     given_the_ai_manager_is_initialized_with_two_bots()
+    local dt = 1
 
     ai1_update:should_be_called_with_any_arguments():
       and_will_return({ force = { x = 400, y = 400 }}):
@@ -98,23 +110,31 @@ describe('AiManager', function()
     update:should_be_called_with_any_arguments():
       and_will_return({ force = { x = 1, y = 0 }}):
       when(function()
-        local moves = ai_manager.update(dt)
+        local moves = ai_manager.update(1)
         assert.are.same({ x = 2, y = 0 }, moves[1].force)
       end)
   end)
 
   it('should expose health based on the ai health stat', function()
-    local update = mach.mock_function('update')
     local ai = function() return {
-      health = 3,
-      update = update
+      health = 3
     }
     end
     given_the_ai_manager_is_initialized_with_this_ai(ai)
     this_bots_health_should_be(1, 3)
   end)
 
-  it('should vary firing rate based on the ai firing rate stat', function()
+  it('should only allow an ai to fire when enough time has elapsed', function()
+    local ai = function() return {
+      health = 3,
+      speed = 1,
+      firing_rate = 3,
+      update = function() return a_move end
+    }
+  end
+    given_the_ai_manager_is_initialized_with_this_ai(ai)
+    the_ai_should_fire_after(1)
+    the_ai_should_not_fire_after(0.5)
     end)
 
   it('should vary damage based on the ai damage stat', function()

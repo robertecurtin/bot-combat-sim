@@ -95,7 +95,7 @@ function love.update(dt)
   world:update(dt)
   local force = 300
   local winner = check_for_winner()
-  local bot_moves = ai_manager.update(bots, i, dt)
+  local bot_moves = ai_manager.update(dt)
   for i, move in ipairs(bot_moves) do
     if bots[i].data.is_alive() then
       bots[i].body:applyForce(force * move.force.x, force * move.force.y)
