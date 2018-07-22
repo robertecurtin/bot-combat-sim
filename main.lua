@@ -48,17 +48,17 @@ function love.load()
   world = love.physics.newWorld(0, 0, true)
   world:setCallbacks(on_collision)
 
+  local width = 800
+  local height = 800
+
   bots = {
-    Bot(new_bot_body_at(400, 200), new_bot_shape(), 'Bot 1', 'Team 1', 50),
-    Bot(new_bot_body_at(400, 400), new_bot_shape(), 'Bot 2', 'Team 1', 50),
-    Bot(new_bot_body_at(200, 200), new_bot_shape(), 'Bot 3', 'Team 2', 50),
-    Bot(new_bot_body_at(200, 400), new_bot_shape(), 'Bot 4', 'Team 2', 50)
+    Bot(new_bot_body_at(width/3,   height/3),   new_bot_shape(), 'Bot 1', 'Team 1', 30),
+    Bot(new_bot_body_at(width/3,   2*height/3), new_bot_shape(), 'Bot 2', 'Team 1', 30),
+    Bot(new_bot_body_at(2*width/3, height/3),   new_bot_shape(), 'Bot 3', 'Team 2', 30),
+    Bot(new_bot_body_at(2*width/3, 2*height/3), new_bot_shape(), 'Bot 4', 'Team 2', 30)
   }
 
   ai_manager = AiManager(bots, ai_config)
-
-  local width = 800
-  local height = 800
 
   initialObjects = {
     Edge(love, world, 'Top edge', 0, 0, width, 0),
