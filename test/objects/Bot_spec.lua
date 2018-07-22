@@ -63,7 +63,6 @@ describe('Bot', function()
     its_name_should_be('some name')
     its_category_should_be('team1')
     its_graphics_type_should_be('circle')
-    its_health_should_be(1)
     it_should_have_a_restitution_value()
     it_should_have_a_mass()
     it_should_be(ALIVE)
@@ -77,7 +76,6 @@ describe('Bot', function()
     })
     its_name_should_be('another name')
     its_category_should_be('team2')
-    its_health_should_be(5)
   end)
 
   it('should update its health when it is set', function()
@@ -93,9 +91,9 @@ describe('Bot', function()
   it('should take damage when it collides with a projectile', function()
     given_the_bot_is_initialized_with({
       name = '',
-      team = 'team2',
-      health = 5
+      team = 'team2'
     })
+    when_its_health_is_set_to(5)
     when_it_collides_with_an_object_with_category('projectile')
     its_health_should_be(4)
     when_it_collides_with_an_object_with_category('projectile')
@@ -105,9 +103,9 @@ describe('Bot', function()
   it('should not take damage when it collides with another bot', function()
     given_the_bot_is_initialized_with({
       name = '',
-      team = 'team2',
-      health = 5
+      team = 'team2'
     })
+    when_its_health_is_set_to(5)
     when_it_collides_with_an_object_with_category('team1')
     its_health_should_be(5)
     when_it_collides_with_an_object_with_category('team2')
@@ -118,8 +116,8 @@ describe('Bot', function()
     given_the_bot_is_initialized_with({
       name = '',
       team = 'team2',
-      health = 5
     })
+    when_its_health_is_set_to(5)
     when_it_collides_with_an_object_with_category('environment')
     its_health_should_be(5)
   end)
