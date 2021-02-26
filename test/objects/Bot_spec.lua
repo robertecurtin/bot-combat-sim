@@ -3,7 +3,6 @@ local mach = require 'mach'
 
 describe('Bot', function()
   local bot
-  local world = {}
 
   local body = { getPosition = mach.mock_function('GetPosition') }
 
@@ -12,10 +11,6 @@ describe('Bot', function()
 
   local function given_the_bot_is_initialized_with(c)
     bot = Bot(body, {}, c.name, c.team, c.health)
-  end
-
-  local function when_it_collides_with_an_object_with_category(category)
-    bot.data.collision_callback({ category = category })
   end
 
   local function when_its_health_is_set_to(health)

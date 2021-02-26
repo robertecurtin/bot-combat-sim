@@ -1,17 +1,18 @@
 local Bot = require 'src/objects/Bot'
 local Edge = require 'src/objects/Edge'
+local Polygon = require 'src/objects/Polygon'
 local Projectile = require 'src/objects/Projectile'
 local timer = require 'src/timer/Timer'()
 local categories = require 'src/objects/categories'
 local colors = require 'src/objects/colors'
 local AiManager = require 'src/ai/AiManager'
-local ai_config = require 'src/ai/config'
+local ai_config = require 'src/ai/ai_config'
 local effect_map = require 'src/on-hit-effects/effect_map'
 
 local world
 local objects = {}
 
-local bots
+local bots = {}
 local ai_manager
 
 local function on_collision(a, b, _)
@@ -52,22 +53,39 @@ function love.load()
   local width = 800
   local height = 800
 
-  bots = {
-    Bot(new_bot_body_at(width/3,   height/3),   new_bot_shape(), 'Bot 1', 'Team 1', 30),
-    Bot(new_bot_body_at(width/3,   2*height/3), new_bot_shape(), 'Bot 2', 'Team 1', 30),
-    Bot(new_bot_body_at(2*width/3, height/3),   new_bot_shape(), 'Bot 3', 'Team 2', 30),
-    Bot(new_bot_body_at(2*width/3, 2*height/3), new_bot_shape(), 'Bot 4', 'Team 2', 30)
-  }
+  for _, v in ipairs(ai_config.team_1) do
+    table.insert(bots,
+      Bot(new_bot_body_at(width/3,   height/3),   new_bot_shape(), 'Bot ' .. #bots + 1, 'Team 1', 30)
+    )
+  end
 
-  ai_manager = AiManager(bots, ai_config)
+  for _, v in ipairs(ai_config.team_2) do
+    table.insert(bots,
+      Bot(new_bot_body_at(2 * width / 3,   2 * height / 3),   new_bot_shape(), 'Bot ' .. #bots + 1, 'Team 2', 30)
+    )
+  end
+
+  ai_manager = AiManager(bots, ai_config.bots)
 
   for i, bot in ipairs(bots) do bot.data.set_health(ai_manager.get_health(i)) end
 
+  local function inner_box_points()
+    local center = { x = width / 2, y = height / 2 }
+    local offset = { x = width / 9, y = height / 9 }
+    return {
+      center.x - offset.x, center.y - offset.y,
+      center.x - offset.x, center.y + offset.y,
+      center.x + offset.x, center.y + offset.y,
+      center.x + offset.x, center.y - offset.y
+    }
+
+  end
   initialObjects = {
     Edge(love, world, 'Top edge', 0, 0, width, 0),
     Edge(love, world, 'Bottom edge', 0, 0, 0, height),
     Edge(love, world, 'Left edge', width, height, width, 0),
-    Edge(love, world, 'Right edge', width, height, 0, height)
+    Edge(love, world, 'Right edge', width, height, 0, height),
+    Polygon(love, world, 'Inner box', inner_box_points())
   }
 
   for _, bot in ipairs(bots) do table.insert(initialObjects, bot) end
@@ -126,6 +144,11 @@ local function remove_dead_objects()
   end
 end
 
+local function draw_polygon(object)
+  love.graphics.setColor(colors[object.data.category])
+  love.graphics.polygon("line", object.body:getWorldPoints(object.shape:getPoints()))
+end
+
 local function draw_circle(object)
   love.graphics.setColor(colors[object.data.category])
   love.graphics.circle("line", object.body:getX(),object.body:getY(), object.shape:getRadius())
@@ -136,6 +159,8 @@ function love.draw()
   for _, object in pairs(objects) do
     if(object.data.graphicsType == 'circle') then
       draw_circle(object)
+    elseif object.data.graphicsType == 'polygon' then
+      draw_polygon(object)
     end
   end
 
