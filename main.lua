@@ -1,6 +1,7 @@
 local Bot = require 'src/objects/Bot'
 local Edge = require 'src/objects/Edge'
 local Projectile = require 'src/objects/Projectile'
+local timer = require 'src/timer/Timer'()
 local categories = require 'src/objects/categories'
 local colors = require 'src/objects/colors'
 local AiManager = require 'src/ai/AiManager'
@@ -13,8 +14,7 @@ local objects = {}
 local bots
 local ai_manager
 
-local function on_collision(a, b, coll)
-  x,y = coll:getNormal()
+local function on_collision(a, b, _)
   local a_data = a:getUserData()
   local b_data = b:getUserData()
 
@@ -76,14 +76,13 @@ function love.load()
   love.window.setMode(width, height)
 end
 
-local function do_damage(o)
-  if o.set_health then
-    o.set_health(o.get_health() - 1)
-  end
-end
-
 local function create_projectile(source, target, effect)
-  local effect = effect_map[effect.effect_name](effect.power, bots)
+  local effect = effect_map[effect.effect_name]({
+    power = effect.power,
+    bots = bots,
+    category = source.category,
+    timer = timer
+  })
   add_object(Projectile(love, world, objects, 'Projectile', source, target, effect))
 end
 
@@ -102,8 +101,8 @@ end
 function love.update(dt)
   world:update(dt)
   local force = 300
-  local winner = check_for_winner()
   local bot_moves = ai_manager.update(dt)
+  timer.tick(dt)
 
   for i, move in ipairs(bot_moves) do
     if bots[i].data.is_alive() then

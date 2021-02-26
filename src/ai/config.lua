@@ -1,9 +1,10 @@
-random_bot = require 'src/ai/Random'
-healer_bot = require 'src/ai/Healer'
+local random_bot = require 'src/ai/Random'
+local healer_bot = require 'src/ai/Healer'
+local pyro_bot = require 'src/ai/Pyro'
 
 return {
-  healer_bot,
   random_bot,
   healer_bot,
-  random_bot
+  pyro_bot,
+  healer_bot
 }

@@ -28,7 +28,7 @@ describe('Timer', function()
     timer = Timer()
   end
   local function given_a_timer_has_been_started_for(time, callback)
-    timer.start_timer(time, callback)
+    timer.start(time, callback)
   end
 
   local function nothing_should_happen(timer)

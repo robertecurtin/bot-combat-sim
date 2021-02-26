@@ -15,7 +15,7 @@ return function()
       end
       callbacks = new_callbacks
     end,
-    start_timer = function(time, callback)
+    start = function(time, callback)
       table.insert(callbacks, {time = time, callback = callback})
     end
   }

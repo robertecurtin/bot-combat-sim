@@ -3,7 +3,7 @@ local vector_to_unit_vector = require 'src/math/vector_to_unit_vector'
 return function (bots, config)
   local ais = {}
   local stats = {}
-  for i, Ai in ipairs(config) do
+  for _, Ai in ipairs(config) do
     local ai = Ai()
     table.insert(ais, ai)
     table.insert(stats, {
